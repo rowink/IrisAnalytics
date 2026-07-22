@@ -37,7 +37,9 @@
           :sites="overviewSites"
           :loading="overviewLoading"
           :initialized="initialized"
+          :timeValue="timeValue"
           @select-site="switchToDetail"
+          @update:timeValue="timeValue = $event"
         />
       </section>
 
