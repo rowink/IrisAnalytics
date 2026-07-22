@@ -17,36 +17,40 @@
       </div>
 
       <nav class="sidebar-nav">
-        <button
-          class="nav-item"
-          :class="{ active: activeView === 'overview' }"
-          @click="$emit('select-overview')"
-        >
-          <LayoutDashboard class="nav-icon" />
-          <span v-if="!collapsed" class="nav-label">总览</span>
-        </button>
+        <div class="nav-fixed">
+          <button
+            class="nav-item"
+            :class="{ active: activeView === 'overview' }"
+            @click="$emit('select-overview')"
+          >
+            <LayoutDashboard class="nav-icon" />
+            <span v-if="!collapsed" class="nav-label">总览</span>
+          </button>
 
-        <div v-if="!collapsed" class="nav-divider">
-          <span>站点列表</span>
+          <div v-if="!collapsed" class="nav-divider">
+            <span>站点列表</span>
+          </div>
         </div>
 
-        <button
-          v-for="site in siteList"
-          :key="site.id"
-          class="nav-item site-item"
-          :class="{ active: activeView === 'detail' && activeSite === site.id }"
-          @click="$emit('select-site', site.id)"
-        >
-          <img
-            v-if="!faviconFailed[site.id]"
-            class="nav-icon"
-            :src="`https://icons.duckduckgo.com/ip3/${site.host}.ico`"
-            referrerpolicy="no-referrer"
-            @error="onFaviconError(site.id)"
-          />
-          <Globe v-else class="nav-icon" />
-          <span v-if="!collapsed" class="nav-label line-clamp-1">{{ site.id }}</span>
-        </button>
+        <div class="nav-scroll">
+          <button
+            v-for="site in siteList"
+            :key="site.id"
+            class="nav-item site-item"
+            :class="{ active: activeView === 'detail' && activeSite === site.id }"
+            @click="$emit('select-site', site.id)"
+          >
+            <img
+              v-if="!faviconFailed[site.id]"
+              class="nav-icon"
+              :src="`https://icons.duckduckgo.com/ip3/${site.host}.ico`"
+              referrerpolicy="no-referrer"
+              @error="onFaviconError(site.id)"
+            />
+            <Globe v-else class="nav-icon" />
+            <span v-if="!collapsed" class="nav-label line-clamp-1">{{ site.id }}</span>
+          </button>
+        </div>
       </nav>
     </div>
   </aside>
@@ -146,11 +150,22 @@ defineEmits<{
 
 .sidebar-nav {
   flex: 1;
-  overflow-y: auto;
-  padding: 8px 6px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  overflow: hidden;
+  padding: 8px 6px;
+}
+
+.nav-fixed {
+  flex-shrink: 0;
+}
+
+.nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 -6px;
+  padding: 0 6px;
 }
 
 .nav-item {
