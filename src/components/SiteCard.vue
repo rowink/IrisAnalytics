@@ -5,7 +5,14 @@
   >
     <CardHeader class="pb-3">
       <div class="flex items-center gap-2">
-        <Globe class="w-4 h-4 text-[#4f6ef7]" />
+        <img
+          v-if="host && !faviconFailed"
+          class="w-4 h-4 rounded"
+          :src="`https://icons.duckduckgo.com/ip3/${host}.ico`"
+          referrerpolicy="no-referrer"
+          @error="faviconFailed = true"
+        />
+        <Globe v-else class="w-4 h-4 text-[#4f6ef7]" />
         <CardTitle class="text-sm font-medium line-clamp-1">{{ siteId }}</CardTitle>
       </div>
     </CardHeader>
@@ -57,6 +64,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 const props = defineProps<{
   siteId: string
+  host?: string
   visitData?: {
     views?: number | string
     visitor?: number | string
@@ -65,6 +73,7 @@ const props = defineProps<{
   echartsData?: Array<{ name: string; value: number | string; per?: string }>
   loading?: boolean
 }>()
+const faviconFailed = ref(false)
 
 defineEmits<{
   select: [siteId: string]

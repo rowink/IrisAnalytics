@@ -113,11 +113,15 @@ const loginFn = async () => {
 // ── View State ──
 const viewMode = ref<'overview' | 'detail'>('overview')
 const selectedSite = ref('')
-const sidebarCollapsed = ref(false)
+const sidebarCollapsed = ref(true)
 const timeValue = ref('today')
 
 // ── Site List ──
-const siteList = ref<string[]>([])
+interface SiteInfo {
+  id: string
+  host: string
+}
+const siteList = ref<SiteInfo[]>([])
 
 const fetchSiteList = async () => {
   try {
@@ -136,7 +140,7 @@ const fetchSiteList = async () => {
       toast({ description: data.message, variant: 'destructive' })
       return []
     }
-    return data.data as string[]
+    return data.data as SiteInfo[]
   } catch (error) {
     console.log(error)
     return []
@@ -158,6 +162,7 @@ interface SiteEchartsItem {
 
 interface SiteOverviewEntry {
   id: string
+  host: string
   visit: SiteVisitData
   echarts: SiteEchartsItem[]
 }
@@ -166,10 +171,11 @@ const overviewData = ref<Record<string, { visit: SiteVisitData; echarts: SiteEch
 const overviewLoading = ref(false)
 
 const overviewSites = computed<SiteOverviewEntry[]>(() => {
-  return siteList.value.map(id => ({
-    id,
-    visit: overviewData.value[id]?.visit || {},
-    echarts: overviewData.value[id]?.echarts || []
+  return siteList.value.map(site => ({
+    id: site.id,
+    host: site.host,
+    visit: overviewData.value[site.id]?.visit || {},
+    echarts: overviewData.value[site.id]?.echarts || []
   }))
 })
 
@@ -182,18 +188,18 @@ const fetchOverviewData = async () => {
 
   try {
     const results = await Promise.all(
-      sites.map(async (siteId) => {
+      sites.map(async (site) => {
         try {
           const [visitRes, echartsRes] = await Promise.all([
             fetch('/api', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'visit', siteID: siteId, time: timeValue.value, session: session.value })
+              body: JSON.stringify({ type: 'visit', siteID: site.id, time: timeValue.value, session: session.value })
             }),
             fetch('/api', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'echarts', siteID: siteId, time: timeValue.value, session: session.value })
+              body: JSON.stringify({ type: 'echarts', siteID: site.id, time: timeValue.value, session: session.value })
             })
           ])
 
@@ -201,13 +207,13 @@ const fetchOverviewData = async () => {
           const echartsData = await echartsRes.json()
 
           return {
-            siteId,
+            siteId: site.id,
             visit: visitData.success ? visitData.data : {},
             echarts: echartsData.success ? echartsData.data : []
           }
         } catch (err) {
-          console.error(`Failed to fetch data for ${siteId}:`, err)
-          return { siteId, visit: {}, echarts: [] }
+          console.error(`Failed to fetch data for ${site.id}:`, err)
+          return { siteId: site.id, visit: {}, echarts: [] }
         }
       })
     )

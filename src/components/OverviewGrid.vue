@@ -24,6 +24,7 @@
         v-for="site in sites"
         :key="site.id"
         :siteId="site.id"
+        :host="site.host"
         :visitData="site.visit"
         :echartsData="site.echarts"
         :loading="false"
@@ -39,6 +40,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface SiteOverview {
   id: string
+  host: string
   visit: {
     views?: number | string
     visitor?: number | string

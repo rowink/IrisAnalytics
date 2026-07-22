@@ -32,13 +32,20 @@
 
         <button
           v-for="site in siteList"
-          :key="site"
+          :key="site.id"
           class="nav-item site-item"
-          :class="{ active: activeView === 'detail' && activeSite === site }"
-          @click="$emit('select-site', site)"
+          :class="{ active: activeView === 'detail' && activeSite === site.id }"
+          @click="$emit('select-site', site.id)"
         >
-          <Globe class="nav-icon" />
-          <span v-if="!collapsed" class="nav-label line-clamp-1">{{ site }}</span>
+          <img
+            v-if="!faviconFailed[site.id]"
+            class="nav-icon"
+            :src="`https://icons.duckduckgo.com/ip3/${site.host}.ico`"
+            referrerpolicy="no-referrer"
+            @error="onFaviconError(site.id)"
+          />
+          <Globe v-else class="nav-icon" />
+          <span v-if="!collapsed" class="nav-label line-clamp-1">{{ site.id }}</span>
         </button>
       </nav>
     </div>
@@ -46,11 +53,17 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import { PanelLeftClose, PanelLeftOpen, LayoutDashboard, Globe } from 'lucide-vue-next'
+
+const faviconFailed = reactive<Record<string, boolean>>({})
+const onFaviconError = (site: string) => {
+  faviconFailed[site] = true
+}
 
 defineProps<{
   collapsed: boolean
-  siteList: string[]
+  siteList: { id: string; host: string }[]
   activeSite: string
   activeView: 'overview' | 'detail'
 }>()
@@ -60,6 +73,8 @@ defineEmits<{
   'select-overview': []
   'select-site': [siteId: string]
 }>()
+
+
 </script>
 
 <style scoped>

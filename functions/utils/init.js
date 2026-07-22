@@ -21,19 +21,24 @@ export const vh_INIT = async (env, time, siteID, tz, type = null) => {
     // 获取 WebSite 列表
     case "list":
       {
-        const query = "SELECT blob1 FROM AnalyticsDataset GROUP BY blob1";
+        const query = "SELECT blob1, blob2 FROM AnalyticsDataset GROUP BY blob1, blob2";
         const res = await fetch(defaultUrl, { method: "POST", body: query, headers: defaultHeaders });
         const { data } = await res.json();
+        const seen = new Set();
+        const merged = (data || []).reverse().filter((row) => {
+          if (seen.has(row.blob1)) return false;
+          seen.add(row.blob1);
+          return true;
+        });
         // 校验白名单
         if (env.CLOUDFLARE_WEBSITE_WHITELIST) {
           const websiteArr = env.CLOUDFLARE_WEBSITE_WHITELIST.split("|");
           const websiteIDArr = websiteArr.map((i) => i.trim().split(",")[1]);
-          resJSON = data
+          resJSON = merged
             .filter((i) => websiteIDArr.includes(i.blob1))
-            .map((i) => i.blob1)
-            .reverse();
+            .map((i) => ({ id: i.blob1, host: i.blob2 }))
         } else {
-          resJSON = data.map((i) => i.blob1).reverse().slice(0, 100);
+          resJSON = merged.map((i) => ({ id: i.blob1, host: i.blob2 })).slice(0, 100);
         }
       }
       break;
