@@ -59,6 +59,7 @@
 import { ref, onMounted, onBeforeUnmount, watch, markRaw, computed } from 'vue'
 import * as echarts from 'echarts'
 import { Globe } from 'lucide-vue-next'
+import { useThemeStore } from '@/stores/theme'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -74,6 +75,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 const faviconFailed = ref(false)
+const theme = useThemeStore()
 
 defineEmits<{
   select: [siteId: string]
@@ -87,12 +89,15 @@ const displayVisit = computed(() => ({
 
 const sparklineRef = ref<HTMLDivElement>()
 let chart: echarts.ECharts | null = null
+const lastSparkData = ref<{ values: number[]; names: string[] }>({ values: [], names: [] })
 
 const renderSparkline = () => {
   if (!sparklineRef.value || !props.echartsData?.length) return
 
   const values = props.echartsData.map(i => Number(i.value))
+  const names = props.echartsData.map(i => i.name)
   const isEmpty = values.every(v => v === 0)
+  lastSparkData.value = { values, names }
 
   if (isEmpty) {
     if (chart) chart.dispose()
@@ -105,9 +110,12 @@ const renderSparkline = () => {
     chart = markRaw(echarts.init(sparklineRef.value, null, { renderer: 'svg', useDirtyRect: true }))
   }
 
+  const lineColor = theme.isDark ? '#8B9CF7' : '#4f6ef7'
+  const areaBottom = theme.isDark ? 'rgba(9,9,11,0)' : '#ffffff'
+
   chart.setOption({
     grid: { left: 0, right: 0, top: 2, bottom: 2 },
-    xAxis: { show: false, type: 'category', data: props.echartsData.map(i => i.name) },
+    xAxis: { show: false, type: 'category', data: names },
     yAxis: { show: false, type: 'value' },
     tooltip: { show: false },
     series: [{
@@ -115,15 +123,15 @@ const renderSparkline = () => {
       type: 'line',
       smooth: true,
       showSymbol: false,
-      lineStyle: { width: 1.5, color: '#4f6ef7' },
+      lineStyle: { width: 1.5, color: lineColor },
       areaStyle: {
         opacity: 0.3,
         color: {
           type: 'linear',
           x: 0, y: 0, x2: 0, y2: 1,
           colorStops: [
-            { offset: 0, color: '#4f6ef7' },
-            { offset: 1, color: '#ffffff' }
+            { offset: 0, color: lineColor },
+            { offset: 1, color: areaBottom }
           ]
         }
       }
@@ -136,6 +144,10 @@ const handleResize = () => chart?.resize()
 watch(() => props.echartsData, () => {
   if (props.echartsData) renderSparkline()
 }, { deep: true })
+
+watch(() => theme.isDark, () => {
+  if (lastSparkData.value.values.length) renderSparkline()
+})
 
 onMounted(() => {
   if (props.echartsData) renderSparkline()
@@ -193,5 +205,17 @@ onBeforeUnmount(() => {
   justify-content: center;
   font-size: 12px;
   color: #a1a1aa;
+}
+
+:root.dark .site-card {
+  border-color: #27272a;
+}
+
+:root.dark .site-card:hover {
+  border-color: rgba(139, 156, 247, 0.3);
+}
+
+:root.dark .stat-value {
+  color: #f4f4f5;
 }
 </style>

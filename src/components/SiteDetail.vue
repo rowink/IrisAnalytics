@@ -195,6 +195,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
 import * as echarts from "echarts";
 import { Clock } from "lucide-vue-next";
+import { useThemeStore } from "@/stores/theme";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -203,6 +204,7 @@ import { useToast } from "@/components/ui/toast/use-toast";
 import vh from "vh-plugin";
 
 const { toast } = useToast();
+const theme = useThemeStore();
 
 const props = defineProps<{
   siteId: string;
@@ -230,6 +232,7 @@ const getDatasStatus = ref(false);
 // ECharts
 const echartsDOM = ref<HTMLDivElement>();
 let canvasMain: echarts.ECharts | null = null;
+const lastChartData = ref<{ dates: any[]; values: any[] }>({ dates: [], values: [] });
 
 const getIconUrl = (url: string) => {
   if (!url) return "https://icons.duckduckgo.com/ip3/none.ico";
@@ -239,18 +242,38 @@ const getIconUrl = (url: string) => {
 
 const getIcon = (code: string) => `${location.origin}/icon/${code}.png`;
 
+function chartColors(isDark: boolean) {
+  return {
+    line: "#6F94F1",
+    areaTop: isDark ? "rgba(111, 148, 241, 0.25)" : "#DAE4FF",
+    areaBottom: isDark ? "rgba(9, 9, 11, 0)" : "#ffffff",
+    axisLabel: isDark ? "#6B7280" : "#959BAA",
+    axisLine: isDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.56)",
+    tooltipBg: isDark ? "rgba(24, 24, 27, 0.95)" : "rgba(255,255,255,0.9)",
+    tooltipBorder: isDark ? "#3F3F46" : "#E4E4E7",
+    tooltipText: isDark ? "#F4F4F5" : "#18181B",
+  };
+}
+
 const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
   if (!canvasMain) return;
+  lastChartData.value = { dates: dateList, values: valueList };
+  const c = chartColors(theme.isDark);
   const option = {
     grid: { left: "0", right: "0", bottom: "0", top: "10", containLabel: true },
     xAxis: {
       type: "category",
       data: dateList,
-      axisLabel: { color: "#959BAA" },
-      axisLine: { lineStyle: { color: "rgba(255,255,255,0.56)", width: 2, type: "dashed" } }
+      axisLabel: { color: c.axisLabel },
+      axisLine: { lineStyle: { color: c.axisLine, width: 2, type: "dashed" as const } }
     },
-    yAxis: { type: "value", axisLabel: { color: "#959BAA" } },
-    tooltip: { trigger: "axis" },
+    yAxis: { type: "value", axisLabel: { color: c.axisLabel } },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: c.tooltipBg,
+      borderColor: c.tooltipBorder,
+      textStyle: { color: c.tooltipText }
+    },
     series: [
       {
         data: valueList,
@@ -262,28 +285,20 @@ const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
           areaStyle: {
             color: {
               colorStops: [
-                { offset: 0, color: "#DAE4FF" },
-                { offset: 1, color: "#ffffff" }
+                { offset: 0, color: c.areaTop },
+                { offset: 1, color: c.areaBottom }
               ],
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              type: "linear",
-              global: false
+              x: 0, y: 0, x2: 0, y2: 1,
+              type: "linear", global: false
             }
           }
         },
         lineStyle: {
           width: 2,
           color: {
-            colorStops: [{ offset: 1, color: "#6F94F1" }],
-            x: 0,
-            y: 0,
-            x2: 1,
-            y2: 0,
-            type: "linear",
-            global: false
+            colorStops: [{ offset: 1, color: c.line }],
+            x: 0, y: 0, x2: 1, y2: 0,
+            type: "linear", global: false
           }
         },
         showSymbol: false,
@@ -291,15 +306,11 @@ const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
           opacity: 1,
           color: {
             colorStops: [
-              { offset: 0, color: "#DAE4FF" },
-              { offset: 1, color: "#ffffff" }
+              { offset: 0, color: c.areaTop },
+              { offset: 1, color: c.areaBottom }
             ],
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            type: "linear",
-            global: false
+            x: 0, y: 0, x2: 0, y2: 1,
+            type: "linear", global: false
           }
         }
       }
@@ -365,6 +376,13 @@ watch(
   },
   { immediate: false }
 );
+
+// Re-render chart on dark mode toggle
+watch(() => theme.isDark, () => {
+  if (lastChartData.value.dates.length) {
+    renderEcharts(lastChartData.value.dates, lastChartData.value.values);
+  }
+});
 
 onMounted(() => {
   // Initialize ECharts
@@ -504,5 +522,26 @@ onBeforeUnmount(() => {
 
 .page-item:hover {
   background: #f5f6fc;
+}
+
+:root.dark .stats-item p {
+  color: #f4f4f5;
+}
+
+:root.dark .page-item em {
+  border-left-color: #3f3f46;
+  color: #6b7280;
+}
+
+:root.dark .page-item em i {
+  background: rgba(111, 148, 241, 0.2);
+}
+
+:root.dark .page-item:hover {
+  background: #18181b;
+}
+
+:root.dark .page-item img {
+  border-color: #3f3f46;
 }
 </style>

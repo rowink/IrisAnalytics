@@ -6,6 +6,10 @@
         <div class="logo">
           <img src="./assets/favicon.ico" />
         </div>
+        <button class="theme-toggle" @click="theme.toggle" :title="theme.isDark ? '切换亮色模式' : '切换暗黑模式'">
+          <Sun v-if="!theme.isDark" class="w-5 h-5" />
+          <Moon v-else class="w-5 h-5" />
+        </button>
         <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
           <Menu class="w-5 h-5" />
         </button>
@@ -75,7 +79,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { Loader2, Menu } from 'lucide-vue-next'
+import { Loader2, Menu, Sun, Moon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toaster } from '@/components/ui/toast'
@@ -84,9 +88,12 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFoo
 import { useStorage } from '@vueuse/core'
 import vh from 'vh-plugin'
 
+import { useThemeStore } from '@/stores/theme'
 import Sidebar from '@/components/Sidebar.vue'
 import OverviewGrid from '@/components/OverviewGrid.vue'
 import SiteDetail from '@/components/SiteDetail.vue'
+
+const theme = useThemeStore()
 
 const { toast } = useToast()
 
@@ -300,9 +307,9 @@ onMounted(async () => {
   box-sizing: border-box;
 }
 
-/* ── Mobile menu button (hidden on desktop) ── */
-.mobile-menu-btn {
-  display: none;
+/* ── Theme toggle button ── */
+.theme-toggle {
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
@@ -313,11 +320,50 @@ onMounted(async () => {
   border-radius: 8px;
   cursor: pointer;
   color: #52525b;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
+}
+
+.theme-toggle:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+:root.dark .theme-toggle {
+  color: #a1a1aa;
+}
+
+:root.dark .theme-toggle:hover {
+  background: #27272a;
+  color: #f4f4f5;
+}
+
+/* ── Mobile menu button (hidden on desktop) ── */
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #52525b;
+  transition: background 0.15s, color 0.15s;
 }
 
 .mobile-menu-btn:hover {
   background: #f4f4f5;
+  color: #18181b;
+}
+
+:root.dark .mobile-menu-btn {
+  color: #a1a1aa;
+}
+
+:root.dark .mobile-menu-btn:hover {
+  background: #27272a;
+  color: #f4f4f5;
 }
 
 /* ── Responsive: mobile ≤ 768px ── */

@@ -73,4 +73,12 @@ defineEmits<{
   padding: 60px 0;
   text-align: center;
 }
+
+:root.dark .overview-title {
+  color: #f4f4f5;
+}
+
+:root.dark .overview-subtitle {
+  color: #6b7280;
+}
 </style>

@@ -142,6 +142,29 @@ const onFaviconError = (siteId: string) => {
   padding-left: 10px;
 }
 
+/* ── Dark mode ── */
+:root.dark .nav-item {
+  color: #a1a1aa;
+}
+
+:root.dark .nav-item:hover {
+  background: #27272a;
+  color: #f4f4f5;
+}
+
+:root.dark .nav-item.active {
+  background: rgba(79, 110, 247, 0.15);
+  color: #8b9cf7;
+}
+
+:root.dark .nav-divider {
+  color: #52525b;
+}
+
+:root.dark .nav-divider::after {
+  background: #27272a;
+}
+
 /* Scrollbar styling */
 .sidebar-nav::-webkit-scrollbar {
   width: 3px;
@@ -154,5 +177,9 @@ const onFaviconError = (siteId: string) => {
 
 .sidebar-nav:hover::-webkit-scrollbar-thumb {
   background: #d4d4d8;
+}
+
+:root.dark .sidebar-nav:hover::-webkit-scrollbar-thumb {
+  background: #3f3f46;
 }
 </style>

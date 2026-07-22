@@ -98,6 +98,10 @@ body {
   background: #fff;
 }
 
+:root.dark body {
+  background: #09090b;
+}
+
 body,
 #app {
   margin: 0;
@@ -112,4 +116,13 @@ body,
 
 button:focus {
   box-shadow: none !important;
+}
+
+/* ── vh-plugin loading overlay dark mode fix ── */
+:root.dark body > .ξvh-loading {
+  background: rgba(9, 9, 11, 0.85) !important;
+}
+
+:root.dark body > .ξvh-loading > span {
+  background: #a1a1aa !important;
 }

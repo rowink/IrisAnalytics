@@ -212,6 +212,36 @@ const onSelectSite = (siteId: string) => {
   transform: translateX(-100%);
 }
 
+/* ── Dark mode ── */
+:root.dark .sidebar {
+  background: #09090b;
+  border-right-color: #27272a;
+}
+
+:root.dark .sidebar-header {
+  border-bottom-color: #27272a;
+}
+
+:root.dark .toggle-btn,
+:root.dark .close-btn {
+  color: #a1a1aa;
+}
+
+:root.dark .toggle-btn:hover,
+:root.dark .close-btn:hover {
+  background: #27272a;
+  color: #f4f4f5;
+}
+
+:root.dark .sidebar-title {
+  color: #f4f4f5;
+}
+
+:root.dark .mobile-sidebar {
+  background: #09090b;
+  border-right-color: #27272a;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .sidebar {
