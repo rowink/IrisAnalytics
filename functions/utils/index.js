@@ -90,30 +90,12 @@ export const echartsData = (data, key, tz) => {
   // key=30 过去30天
   // key=60 过去60天
   // key=90 过去90天
-  let timeArr = [];
-  switch (key) {
-    case "today":
-    case "1d":
-      timeArr = data.map((i) => {
-        i.t_str = dayjs.utc(i.hour).tz(tz).format("HH");
-        return i;
-      });
-      break;
-    case "7d":
-    case "30d":
-    case "60d":
-    case "90d":
-      timeArr = data.map((i) => {
-        i.t_str = dayjs.utc(i.hour).tz(tz).format("MM.DD");
-        return i;
-      });
-      break;
-    default:
-      timeArr = data.map((i) => {
-        i.t_str = dayjs.utc(i.hour).tz(tz).format("HH");
-        return i;
-      });
-  }
+  const formatHour = (i) => dayjs.utc(i.hour).tz(tz).format(key === "today" || key === "1d" ? "HH" : "MM.DD");
+  const viewsArr = data.map((i) => ({ t_str: formatHour(i), count: Number(i.count) || 0 }));
+  const visitorsArr = data.map((i) => ({ t_str: formatHour(i), count: Number(i.visitors) || 0 }));
   const now = dayjs().tz(tz);
-  return countData(timeArr, "t_str", { key, now }, false);
+  return {
+    views: countData(viewsArr, "t_str", { key, now }, false),
+    visitors: countData(visitorsArr, "t_str", { key, now }, false)
+  };
 };

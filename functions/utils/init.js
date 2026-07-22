@@ -46,7 +46,7 @@ export const vh_INIT = async (env, time, siteID, tz, type = null) => {
     // 获取图表
     case "echarts":
       {
-        const query = `SELECT formatDateTime(timestamp, '%Y-%m-%d %H:00:00') AS hour, SUM(_sample_interval) AS count ${SQL_WHERE} GROUP BY hour ORDER BY hour`;
+        const query = `SELECT formatDateTime(timestamp, '%Y-%m-%d %H:00:00') AS hour, SUM(_sample_interval) AS count, SUM(IF(double1 = '1', _sample_interval, 0)) AS visitors ${SQL_WHERE} GROUP BY hour ORDER BY hour`;
         const res = await fetch(defaultUrl, { method: "POST", body: query, headers: defaultHeaders });
         const { data } = await res.json();
         resJSON = echartsData(data, time, tz);

@@ -101,7 +101,7 @@ const timeList = [
 }
 
 .overview-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: #18181b;
   margin: 0;

@@ -225,7 +225,7 @@ const fetchOverviewData = async () => {
           return {
             siteId: site.id,
             visit: visitData.success ? visitData.data : {},
-            echarts: echartsData.success ? echartsData.data : []
+            echarts: echartsData.success ? echartsData.data.views : []
           }
         } catch (err) {
           console.error(`Failed to fetch data for ${site.id}:`, err)

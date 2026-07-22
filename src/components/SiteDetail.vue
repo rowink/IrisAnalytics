@@ -28,7 +28,7 @@
 
       <div class="w-full flex items-center justify-between gap-4">
         <div>
-          <span>{{ siteId }}</span>
+          <h2 class="detail-title">{{ siteId }}</h2>
         </div>
 
         <div class="flex items-center gap-4">
@@ -232,7 +232,7 @@ const getDatasStatus = ref(false);
 // ECharts
 const echartsDOM = ref<HTMLDivElement>();
 let canvasMain: echarts.ECharts | null = null;
-const lastChartData = ref<{ dates: any[]; values: any[] }>({ dates: [], values: [] });
+const lastChartData = ref<{ dates: any[]; views: any[]; visitors: any[] }>({ dates: [], views: [], visitors: [] });
 
 const getIconUrl = (url: string) => {
   if (!url) return "https://icons.duckduckgo.com/ip3/none.ico";
@@ -247,6 +247,9 @@ function chartColors(isDark: boolean) {
     line: "#6F94F1",
     areaTop: isDark ? "rgba(111, 148, 241, 0.25)" : "#DAE4FF",
     areaBottom: isDark ? "rgba(9, 9, 11, 0)" : "#ffffff",
+    visitorLine: "#5DA68F",
+    visitorAreaTop: isDark ? "rgba(93, 166, 143, 0.2)" : "#D8EDE5",
+    visitorAreaBottom: isDark ? "rgba(9, 9, 11, 0)" : "#ffffff",
     axisLabel: isDark ? "#6B7280" : "#959BAA",
     axisLine: isDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.56)",
     tooltipBg: isDark ? "rgba(24, 24, 27, 0.95)" : "rgba(255,255,255,0.9)",
@@ -255,12 +258,21 @@ function chartColors(isDark: boolean) {
   };
 }
 
-const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
+const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList: Array<any>) => {
   if (!canvasMain) return;
-  lastChartData.value = { dates: dateList, values: valueList };
+  lastChartData.value = { dates: dateList, views: viewsList, visitors: visitorsList };
   const c = chartColors(theme.isDark);
   const option = {
-    grid: { left: "0", right: "0", bottom: "0", top: "10", containLabel: true },
+    legend: {
+      data: ["浏览量", "访客数"],
+      top: 0,
+      left: "center",
+      textStyle: { color: c.axisLabel, fontSize: 12 },
+      icon: "circle",
+      itemWidth: 8,
+      itemHeight: 8
+    },
+    grid: { left: "0", right: "0", bottom: "0", top: "30", containLabel: true },
     xAxis: {
       type: "category",
       data: dateList,
@@ -276,31 +288,12 @@ const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
     },
     series: [
       {
-        data: valueList,
+        name: "浏览量",
+        data: viewsList,
         type: "line",
         smooth: true,
-        emphasis: {
-          focus: "series",
-          itemStyle: { borderWidth: 2 },
-          areaStyle: {
-            color: {
-              colorStops: [
-                { offset: 0, color: c.areaTop },
-                { offset: 1, color: c.areaBottom }
-              ],
-              x: 0, y: 0, x2: 0, y2: 1,
-              type: "linear", global: false
-            }
-          }
-        },
-        lineStyle: {
-          width: 2,
-          color: {
-            colorStops: [{ offset: 1, color: c.line }],
-            x: 0, y: 0, x2: 1, y2: 0,
-            type: "linear", global: false
-          }
-        },
+        emphasis: { focus: "series" },
+        lineStyle: { width: 2, color: c.line },
         showSymbol: false,
         areaStyle: {
           opacity: 1,
@@ -308,6 +301,26 @@ const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
             colorStops: [
               { offset: 0, color: c.areaTop },
               { offset: 1, color: c.areaBottom }
+            ],
+            x: 0, y: 0, x2: 0, y2: 1,
+            type: "linear", global: false
+          }
+        }
+      },
+      {
+        name: "访客数",
+        data: visitorsList,
+        type: "line",
+        smooth: true,
+        emphasis: { focus: "series" },
+        lineStyle: { width: 2, color: c.visitorLine },
+        showSymbol: false,
+        areaStyle: {
+          opacity: 1,
+          color: {
+            colorStops: [
+              { offset: 0, color: c.visitorAreaTop },
+              { offset: 1, color: c.visitorAreaBottom }
             ],
             x: 0, y: 0, x2: 0, y2: 1,
             type: "linear", global: false
@@ -348,13 +361,15 @@ const getDatas = async () => {
           toast({ description: data.message, variant: "destructive" });
           return;
         }
-        tempResData.value[type] =
-          type === "echarts"
-            ? renderEcharts(
-                data.data.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? "点" : "日"}`),
-                data.data.map((i: any) => `${i.value}`)
-              )
-            : data.data;
+        if (type === "echarts") {
+          const dates = data.data.views.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? "点" : "日"}`);
+          const views = data.data.views.map((i: any) => i.value);
+          const visitors = data.data.visitors.map((i: any) => i.value);
+          renderEcharts(dates, views, visitors);
+          tempResData.value[type] = data.data;
+        } else {
+          tempResData.value[type] = data.data;
+        }
       } catch (error) {
         console.log(error);
       }
@@ -380,7 +395,7 @@ watch(
 // Re-render chart on dark mode toggle
 watch(() => theme.isDark, () => {
   if (lastChartData.value.dates.length) {
-    renderEcharts(lastChartData.value.dates, lastChartData.value.values);
+    renderEcharts(lastChartData.value.dates, lastChartData.value.views, lastChartData.value.visitors);
   }
 });
 
@@ -434,6 +449,17 @@ onBeforeUnmount(() => {
   min-width: 80px;
 }
 
+.detail-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #18181b;
+  margin: 0;
+}
+
+:root.dark .detail-title {
+  color: #f4f4f5;
+}
+
 .stats-item span {
   font-size: 13px;
   color: #a1a1aa;
@@ -441,8 +467,8 @@ onBeforeUnmount(() => {
 }
 
 .stats-item p {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: #18181b;
   line-height: 1;
 }
