@@ -385,6 +385,7 @@ onBeforeUnmount(() => {
 .stats-bar {
   display: flex;
   gap: 24px;
+  margin-right: 16px;
 }
 
 .stats-item {

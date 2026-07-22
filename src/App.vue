@@ -27,6 +27,7 @@
         <OverviewGrid
           :sites="overviewSites"
           :loading="overviewLoading"
+          :initialized="initialized"
           @select-site="switchToDetail"
         />
       </section>
@@ -249,6 +250,8 @@ watch(timeValue, () => {
 })
 
 // ── Initialize ──
+const initialized = ref(false)
+
 const initializeApp = async () => {
   const sites = await fetchSiteList()
   if (sites.length > 0) {
@@ -256,6 +259,7 @@ const initializeApp = async () => {
     viewMode.value = 'overview'
     await fetchOverviewData()
   }
+  initialized.value = true
 }
 
 onMounted(async () => {
