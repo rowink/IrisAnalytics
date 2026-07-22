@@ -6,18 +6,23 @@
         <div class="logo">
           <img src="./assets/favicon.ico" />
         </div>
+        <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
+          <Menu class="w-5 h-5" />
+        </button>
       </div>
     </header>
 
-    <!-- Sidebar (fixed) -->
+    <!-- Sidebar -->
     <Sidebar
       :collapsed="sidebarCollapsed"
       :siteList="siteList"
       :activeSite="selectedSite"
       :activeView="viewMode"
+      :mobileOpen="mobileMenuOpen"
       @toggle-collapse="sidebarCollapsed = !sidebarCollapsed"
       @select-overview="switchToOverview"
       @select-site="switchToDetail"
+      @close-mobile="mobileMenuOpen = false"
     />
 
     <!-- Main Content -->
@@ -70,7 +75,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2, Menu } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toaster } from '@/components/ui/toast'
@@ -115,6 +120,7 @@ const loginFn = async () => {
 const viewMode = ref<'overview' | 'detail'>('overview')
 const selectedSite = ref('')
 const sidebarCollapsed = ref(true)
+const mobileMenuOpen = ref(false)
 const timeValue = ref('today')
 
 // ── Site List ──
@@ -292,6 +298,42 @@ onMounted(async () => {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+/* ── Mobile menu button (hidden on desktop) ── */
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #52525b;
+  transition: background 0.15s;
+}
+
+.mobile-menu-btn:hover {
+  background: #f4f4f5;
+}
+
+/* ── Responsive: mobile ≤ 768px ── */
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .app-main {
+    margin-left: 0 !important;
+    padding: 12px 16px;
+  }
+
+  .app-main.sidebar-closed {
+    margin-left: 0 !important;
+  }
 }
 </style>
 
