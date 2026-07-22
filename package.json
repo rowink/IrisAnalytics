@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build && wrangler pages dev ./dist",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "npm run build && wrangler pages dev ./dist",
     "build-only": "vite build",
