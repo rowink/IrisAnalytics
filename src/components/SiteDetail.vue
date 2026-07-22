@@ -2,45 +2,50 @@
   <section class="site-detail">
     <!-- Time selector -->
     <div class="detail-controls">
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 text-sm text-[#52525b]">
-          <Clock class="w-4 h-4" />
-          <span>{{ siteId }}</span>
-        </div>
-        <Select :disabled="getDatasStatus" :model-value="timeValue" @update:model-value="$emit('update:timeValue', $event)">
-          <SelectTrigger class="w-[180px]">
-            <SelectValue placeholder="选择周期" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Cycle Time</SelectLabel>
-              <SelectItem :value="i.value" v-for="i in timeList" :key="i.name">{{ i.name }}</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
       <div class="stats-bar">
         <div class="stats-item">
           <span>Views</span>
           <div class="space-y-2" v-if="resData.visit.views === undefined">
-            <Skeleton class="h-6 w-16 ml-auto" />
+            <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.views }}</p>
         </div>
         <div class="stats-item">
           <span>Visitors</span>
           <div class="space-y-2" v-if="resData.visit.visitor === undefined">
-            <Skeleton class="h-6 w-16 ml-auto" />
+            <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.visitor }}</p>
         </div>
         <div class="stats-item">
           <span>Visits</span>
           <div class="space-y-2" v-if="resData.visit.visit === undefined">
-            <Skeleton class="h-6 w-16 ml-auto" />
+            <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.visit }}</p>
+        </div>
+      </div>
+
+      <div class="w-full flex items-center justify-between gap-4">
+        <div>
+          <span>{{ siteId }}</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 text-sm text-[#52525b]">
+            <Clock class="w-4 h-4" />
+          </div>
+          <Select :disabled="getDatasStatus" :model-value="timeValue" @update:model-value="$emit('update:timeValue', $event)">
+            <SelectTrigger class="w-[180px]">
+              <SelectValue placeholder="选择周期" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Cycle Time</SelectLabel>
+                <SelectItem :value="i.value" v-for="i in timeList" :key="i.name">{{ i.name }}</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
@@ -388,20 +393,25 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
-  justify-content: space-between;
   padding-bottom: 24px;
 }
 
 .stats-bar {
   display: flex;
   gap: 24px;
-  margin-right: 16px;
+  flex: 1 1 100%;
+  order: 1;
+}
+
+.detail-controls > .flex.items-center {
+  order: 0;
+  margin-left: auto;
 }
 
 .stats-item {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 4px;
   min-width: 80px;
 }
