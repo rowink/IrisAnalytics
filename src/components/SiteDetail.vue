@@ -279,7 +279,11 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
       axisLabel: { color: c.axisLabel },
       axisLine: { lineStyle: { color: c.axisLine, width: 2, type: "dashed" as const } }
     },
-    yAxis: { type: "value", axisLabel: { color: c.axisLabel } },
+    yAxis: {
+      type: "value",
+      axisLabel: { color: c.axisLabel },
+      splitLine: { lineStyle: { color: theme.isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)" } }
+    },
     tooltip: {
       trigger: "axis",
       backgroundColor: c.tooltipBg,
