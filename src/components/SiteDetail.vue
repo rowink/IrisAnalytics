@@ -20,9 +20,7 @@
         </Select>
       </div>
 
-      <div
-        class="stats-bar"
-      >
+      <div class="stats-bar">
         <div class="stats-item">
           <span>Views</span>
           <div class="space-y-2" v-if="resData.visit.views === undefined">
@@ -51,7 +49,7 @@
     <div ref="echartsDOM" class="data-view"></div>
 
     <!-- Pages & Referrers -->
-    <div class="pt-6 grid md:grid-cols-2 sm:grid-cols-1 gap-[16px]">
+    <div class="pt-6 grid md:grid-cols-2 sm:grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
           <CardTitle>Pages</CardTitle>
@@ -86,7 +84,7 @@
             <p class="page-item" v-for="(i, idx) in resData.referrer" :key="idx">
               <img v-if="i.name" :src="getIconUrl(i.name)" />
               <a :href="i.name" target="_blank" rel="noopener noreferrer" class="line-clamp-1 cursor-pointer">
-                {{ i.name || '(None)' }}
+                {{ i.name || "(None)" }}
               </a>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
@@ -107,7 +105,7 @@
     </div>
 
     <!-- Browsers, OS, Areas -->
-    <div class="pt-6 grid xl:grid-cols-3 gap-[16px] md:grid-cols-2 sm:grid-cols-1">
+    <div class="grid xl:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
           <CardTitle>Browsers</CardTitle>
@@ -185,95 +183,102 @@
         </CardContent>
       </Card>
     </div>
-
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, markRaw } from 'vue'
-import * as echarts from 'echarts'
-import { Clock } from 'lucide-vue-next'
-import { Skeleton } from '@/components/ui/skeleton'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useToast } from '@/components/ui/toast/use-toast'
-import vh from 'vh-plugin'
+import { ref, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
+import * as echarts from "echarts";
+import { Clock } from "lucide-vue-next";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/toast/use-toast";
+import vh from "vh-plugin";
 
-const { toast } = useToast()
+const { toast } = useToast();
 
 const props = defineProps<{
-  siteId: string
-  timeValue: string
-}>()
+  siteId: string;
+  timeValue: string;
+}>();
 
 const emit = defineEmits<{
-  'update:timeValue': [value: string]
-}>()
+  "update:timeValue": [value: string];
+}>();
 
 const timeList = [
-  { name: 'Today', value: 'today' },
-  { name: 'Yesterday', value: '1d' },
-  { name: 'Last 7 days', value: '7d' },
-  { name: 'Last 30 days', value: '30d' },
-  { name: 'Last 60 days', value: '60d' },
-  { name: 'Last 90 days', value: '90d' }
-]
+  { name: "Today", value: "today" },
+  { name: "Yesterday", value: "1d" },
+  { name: "Last 7 days", value: "7d" },
+  { name: "Last 30 days", value: "30d" },
+  { name: "Last 60 days", value: "60d" },
+  { name: "Last 90 days", value: "90d" }
+];
 
 // Data state
-const resData = ref<any>({ visit: {} })
-const tempResData = ref<any>({ visit: {} })
-const getDatasStatus = ref(false)
+const resData = ref<any>({ visit: {} });
+const tempResData = ref<any>({ visit: {} });
+const getDatasStatus = ref(false);
 
 // ECharts
-const echartsDOM = ref<HTMLDivElement>()
-let canvasMain: echarts.ECharts | null = null
+const echartsDOM = ref<HTMLDivElement>();
+let canvasMain: echarts.ECharts | null = null;
 
 const getIconUrl = (url: string) => {
-  if (!url) return 'https://icons.duckduckgo.com/ip3/none.ico'
-  const _url = new URL(url)
-  return `https://icons.duckduckgo.com/ip3/${_url.hostname}.ico`
-}
+  if (!url) return "https://icons.duckduckgo.com/ip3/none.ico";
+  const _url = new URL(url);
+  return `https://icons.duckduckgo.com/ip3/${_url.hostname}.ico`;
+};
 
-const getIcon = (code: string) => `${location.origin}/icon/${code}.png`
+const getIcon = (code: string) => `${location.origin}/icon/${code}.png`;
 
 const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
-  if (!canvasMain) return
+  if (!canvasMain) return;
   const option = {
-    grid: { left: '0', right: '0', bottom: '0', top: '10', containLabel: true },
+    grid: { left: "0", right: "0", bottom: "0", top: "10", containLabel: true },
     xAxis: {
-      type: 'category',
+      type: "category",
       data: dateList,
-      axisLabel: { color: '#959BAA' },
-      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.56)', width: 2, type: 'dashed' } }
+      axisLabel: { color: "#959BAA" },
+      axisLine: { lineStyle: { color: "rgba(255,255,255,0.56)", width: 2, type: "dashed" } }
     },
-    yAxis: { type: 'value', axisLabel: { color: '#959BAA' } },
-    tooltip: { trigger: 'axis' },
+    yAxis: { type: "value", axisLabel: { color: "#959BAA" } },
+    tooltip: { trigger: "axis" },
     series: [
       {
         data: valueList,
-        type: 'line',
+        type: "line",
         smooth: true,
         emphasis: {
-          focus: 'series',
+          focus: "series",
           itemStyle: { borderWidth: 2 },
           areaStyle: {
             color: {
               colorStops: [
-                { offset: 0, color: '#DAE4FF' },
-                { offset: 1, color: '#ffffff' }
+                { offset: 0, color: "#DAE4FF" },
+                { offset: 1, color: "#ffffff" }
               ],
-              x: 0, y: 0, x2: 0, y2: 1,
-              type: 'linear', global: false
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              type: "linear",
+              global: false
             }
           }
         },
         lineStyle: {
           width: 2,
           color: {
-            colorStops: [{ offset: 1, color: '#6F94F1' }],
-            x: 0, y: 0, x2: 1, y2: 0,
-            type: 'linear', global: false
+            colorStops: [{ offset: 1, color: "#6F94F1" }],
+            x: 0,
+            y: 0,
+            x2: 1,
+            y2: 0,
+            type: "linear",
+            global: false
           }
         },
         showSymbol: false,
@@ -281,90 +286,95 @@ const renderEcharts = (dateList: Array<any>, valueList: Array<any>) => {
           opacity: 1,
           color: {
             colorStops: [
-              { offset: 0, color: '#DAE4FF' },
-              { offset: 1, color: '#ffffff' }
+              { offset: 0, color: "#DAE4FF" },
+              { offset: 1, color: "#ffffff" }
             ],
-            x: 0, y: 0, x2: 0, y2: 1,
-            type: 'linear', global: false
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            type: "linear",
+            global: false
           }
         }
       }
     ]
-  }
-  canvasMain.setOption(option)
-}
+  };
+  canvasMain.setOption(option);
+};
 
 const getDatas = async () => {
-  resData.value = { visit: {} }
-  tempResData.value = { visit: {} }
+  resData.value = { visit: {} };
+  tempResData.value = { visit: {} };
 
-  const pmsARR = ['visit', 'path', 'referrer', 'os', 'soft', 'area', 'echarts']
-  getDatasStatus.value = true
-  vh.showLoading()
+  const pmsARR = ["visit", "path", "referrer", "os", "soft", "area", "echarts"];
+  getDatasStatus.value = true;
+  vh.showLoading();
 
-  const session = localStorage.getItem('session') || ''
+  const session = localStorage.getItem("session") || "";
 
   try {
     const promisesForEach = pmsARR.map(async (type) => {
       try {
-        const pms = { type, siteID: props.siteId, time: props.timeValue, session }
-        const res = await fetch('/api', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const pms = { type, siteID: props.siteId, time: props.timeValue, session };
+        const res = await fetch("/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(pms)
-        })
-        const data = await res.json()
+        });
+        const data = await res.json();
         if (data.code && data.code === 401) {
-          localStorage.clear()
-          window.location.reload()
-          return
+          localStorage.clear();
+          window.location.reload();
+          return;
         }
         if (!data.success) {
-          toast({ description: data.message, variant: 'destructive' })
-          return
+          toast({ description: data.message, variant: "destructive" });
+          return;
         }
-        tempResData.value[type] = type === 'echarts'
-          ? renderEcharts(
-              data.data.map((i: any) => `${i.name}${['today', '1d'].includes(props.timeValue) ? '点' : '日'}`),
-              data.data.map((i: any) => `${i.value}`)
-            )
-          : data.data
+        tempResData.value[type] =
+          type === "echarts"
+            ? renderEcharts(
+                data.data.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? "点" : "日"}`),
+                data.data.map((i: any) => `${i.value}`)
+              )
+            : data.data;
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    })
+    });
 
-    await Promise.all(promisesForEach)
+    await Promise.all(promisesForEach);
   } finally {
-    getDatasStatus.value = false
-    vh.hideLoading()
-    resData.value = { ...tempResData.value }
+    getDatasStatus.value = false;
+    vh.hideLoading();
+    resData.value = { ...tempResData.value };
   }
-}
+};
 
 // Watch for changes in siteId or timeValue
 watch(
   () => [props.siteId, props.timeValue],
   () => {
-    if (props.siteId) getDatas()
+    if (props.siteId) getDatas();
   },
   { immediate: false }
-)
+);
 
 onMounted(() => {
   // Initialize ECharts
   if (echartsDOM.value) {
-    canvasMain = markRaw(echarts.init(echartsDOM.value, null, { renderer: 'svg', useDirtyRect: true }))
-    window.addEventListener('resize', () => canvasMain?.resize())
+    canvasMain = markRaw(echarts.init(echartsDOM.value, null, { renderer: "svg", useDirtyRect: true }));
+    window.addEventListener("resize", () => canvasMain?.resize());
   }
   // Fetch data on mount
-  if (props.siteId) getDatas()
-})
+  if (props.siteId) getDatas();
+});
 
 onBeforeUnmount(() => {
-  canvasMain?.dispose()
-  canvasMain = null
-})
+  canvasMain?.dispose();
+  canvasMain = null;
+});
 </script>
 
 <style scoped>
