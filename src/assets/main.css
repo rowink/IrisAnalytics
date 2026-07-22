@@ -94,7 +94,7 @@
 }
 
 body {
-  cursor: url('./default.cur'), default;
+  cursor: url("./default.cur"), default;
   background: #fff;
 }
 
@@ -105,10 +105,8 @@ body,
   padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   height: max-content;
-  font-family: 'HarmonyOS Sans SC';
   overflow-x: hidden;
 }
 
