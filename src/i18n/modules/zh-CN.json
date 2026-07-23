@@ -1,0 +1,61 @@
+{
+  "header.backToOverview": "返回总览",
+  "header.settings": "设置",
+  "header.toggleLight": "切换亮色模式",
+  "header.toggleDark": "切换暗黑模式",
+
+  "sidebar.collapse": "收起侧边栏",
+  "sidebar.expand": "展开侧边栏",
+  "sidebar.navigation": "导航",
+  "sidebar.siteList": "站点列表",
+  "sidebar.overview": "总览",
+
+  "overview.title": "站点总览",
+  "overview.subtitle": "共 {count} 个站点",
+  "overview.emptyTitle": "暂无站点数据",
+  "overview.emptyDesc": "请确保已正确集成追踪代码并已有有效访问。",
+  "overview.selectPeriod": "选择周期",
+
+  "time.today": "Today",
+  "time.yesterday": "Yesterday",
+  "time.last7days": "Last 7 days",
+  "time.last30days": "Last 30 days",
+  "time.last60days": "Last 60 days",
+  "time.last90days": "Last 90 days",
+  "time.hour": "点",
+  "time.day": "日",
+
+  "detail.views": "Views",
+  "detail.visitors": "Visitors",
+  "detail.visits": "Visits",
+  "detail.pages": "Pages",
+  "detail.referrers": "Referrers",
+  "detail.browsers": "Browsers",
+  "detail.os": "OS",
+  "detail.areas": "Areas",
+  "detail.none": "(None)",
+
+  "chart.views": "浏览量",
+  "chart.visitors": "访客数",
+
+  "login.title": "请输入登录密码",
+  "login.placeholder": "Password",
+  "login.button": "登录",
+  "login.enterPassword": "请输入密码",
+
+  "cycle.time": "Cycle Time",
+
+  "settings.title": "设置",
+  "settings.language": "语言",
+  "settings.languageDesc": "选择界面显示语言",
+  "settings.theme": "主题",
+  "settings.themeDesc": "切换深色/浅色模式",
+  "settings.light": "浅色",
+  "settings.dark": "深色",
+  "settings.system": "跟随系统",
+
+  "common.loading": "加载中...",
+  "common.save": "保存",
+  "common.cancel": "取消",
+  "common.close": "关闭"
+}

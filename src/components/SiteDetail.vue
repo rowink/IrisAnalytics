@@ -4,21 +4,21 @@
     <div class="detail-controls">
       <div class="stats-bar">
         <div class="stats-item">
-          <span>Views</span>
+          <span>{{ t('detail.views') }}</span>
           <div class="space-y-2" v-if="resData.visit.views === undefined">
             <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.views }}</p>
         </div>
         <div class="stats-item">
-          <span>Visitors</span>
+          <span>{{ t('detail.visitors') }}</span>
           <div class="space-y-2" v-if="resData.visit.visitor === undefined">
             <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.visitor }}</p>
         </div>
         <div class="stats-item">
-          <span>Visits</span>
+          <span>{{ t('detail.visits') }}</span>
           <div class="space-y-2" v-if="resData.visit.visit === undefined">
             <Skeleton class="h-6 w-16" />
           </div>
@@ -37,11 +37,11 @@
           </div>
           <Select :disabled="getDatasStatus" :model-value="timeValue" @update:model-value="$emit('update:timeValue', $event)">
             <SelectTrigger class="w-[180px]">
-              <SelectValue placeholder="选择周期" />
+              <SelectValue :placeholder="t('overview.selectPeriod')" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Cycle Time</SelectLabel>
+                <SelectLabel>{{ t('cycle.time') }}</SelectLabel>
                 <SelectItem :value="i.value" v-for="i in timeList" :key="i.name">{{ i.name }}</SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -57,7 +57,7 @@
     <div class="pt-6 grid md:grid-cols-2 sm:grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>Pages</CardTitle>
+          <CardTitle>{{ t('detail.pages') }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.path != undefined">
@@ -82,14 +82,14 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>Referrers</CardTitle>
+          <CardTitle>{{ t('detail.referrers') }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.referrer != undefined">
             <p class="page-item" v-for="(i, idx) in resData.referrer" :key="idx">
               <img v-if="i.name" :src="getIconUrl(i.name)" />
               <a :href="i.name" target="_blank" rel="noopener noreferrer" class="line-clamp-1 cursor-pointer">
-                {{ i.name || "(None)" }}
+                {{ i.name || t('detail.none') }}
               </a>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
@@ -113,7 +113,7 @@
     <div class="grid xl:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>Browsers</CardTitle>
+          <CardTitle>{{ t('detail.browsers') }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.soft != undefined">
@@ -138,7 +138,7 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>OS</CardTitle>
+          <CardTitle>{{ t('detail.os') }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.os != undefined">
@@ -164,7 +164,7 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>Areas</CardTitle>
+          <CardTitle>{{ t('detail.areas') }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.area != undefined">
@@ -192,10 +192,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
 import * as echarts from "echarts";
 import { Clock } from "lucide-vue-next";
 import { useThemeStore } from "@/stores/theme";
+import { useI18n } from 'vue-i18n';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -205,6 +206,7 @@ import vh from "vh-plugin";
 
 const { toast } = useToast();
 const theme = useThemeStore();
+const { t } = useI18n();
 
 const props = defineProps<{
   siteId: string;
@@ -215,14 +217,14 @@ const emit = defineEmits<{
   "update:timeValue": [value: string];
 }>();
 
-const timeList = [
-  { name: "Today", value: "today" },
-  { name: "Yesterday", value: "1d" },
-  { name: "Last 7 days", value: "7d" },
-  { name: "Last 30 days", value: "30d" },
-  { name: "Last 60 days", value: "60d" },
-  { name: "Last 90 days", value: "90d" }
-];
+const timeList = computed(() => [
+  { name: t('time.today'), value: "today" },
+  { name: t('time.yesterday'), value: "1d" },
+  { name: t('time.last7days'), value: "7d" },
+  { name: t('time.last30days'), value: "30d" },
+  { name: t('time.last60days'), value: "60d" },
+  { name: t('time.last90days'), value: "90d" }
+]);
 
 // Data state
 const resData = ref<any>({ visit: {} });
@@ -264,7 +266,7 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
   const c = chartColors(theme.isDark);
   const option = {
     legend: {
-      data: ["浏览量", "访客数"],
+      data: [t('chart.views'), t('chart.visitors')],
       top: 0,
       left: "center",
       textStyle: { color: c.axisLabel, fontSize: 12 },
@@ -292,7 +294,7 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
     },
     series: [
       {
-        name: "浏览量",
+        name: t('chart.views'),
         data: viewsList,
         type: "line",
         smooth: true,
@@ -312,7 +314,7 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
         }
       },
       {
-        name: "访客数",
+        name: t('chart.visitors'),
         data: visitorsList,
         type: "line",
         smooth: true,
@@ -366,7 +368,7 @@ const getDatas = async () => {
           return;
         }
         if (type === "echarts") {
-          const dates = data.data.views.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? "点" : "日"}`);
+          const dates = data.data.views.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? t('time.hour') : t('time.day')}`);
           const views = data.data.views.map((i: any) => i.value);
           const visitors = data.data.visitors.map((i: any) => i.value);
           renderEcharts(dates, views, visitors);

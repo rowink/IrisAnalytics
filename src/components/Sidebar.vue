@@ -10,12 +10,12 @@
         <button
           class="toggle-btn"
           @click="$emit('toggle-collapse')"
-          :title="collapsed ? '展开侧边栏' : '收起侧边栏'"
+          :title="collapsed ? t('sidebar.expand') : t('sidebar.collapse')"
         >
           <PanelLeftClose v-if="!collapsed" />
           <PanelLeftOpen v-else />
         </button>
-        <span v-if="!collapsed" class="sidebar-title">导航</span>
+          <span v-if="!collapsed" class="sidebar-title">{{ t('sidebar.navigation') }}</span>
       </div>
 
       <SidebarNav
@@ -38,7 +38,7 @@
         <aside class="mobile-sidebar">
           <div class="sidebar-inner">
             <div class="sidebar-header">
-              <span class="sidebar-title">导航</span>
+              <span class="sidebar-title">{{ t('sidebar.navigation') }}</span>
               <button class="close-btn" @click="$emit('close-mobile')">
                 <X />
               </button>
@@ -65,7 +65,10 @@
 import { reactive } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { PanelLeftClose, PanelLeftOpen, LayoutDashboard, Globe, X } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import SidebarNav from './SidebarNav.vue'
+
+const { t } = useI18n()
 
 const isMobile = useMediaQuery('(max-width: 768px)')
 
@@ -78,7 +81,7 @@ const props = defineProps<{
   collapsed: boolean
   siteList: { id: string; host: string }[]
   activeSite: string
-  activeView: 'overview' | 'detail'
+  activeView: 'overview' | 'detail' | 'settings'
   mobileOpen?: boolean
 }>()
 

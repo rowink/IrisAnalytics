@@ -1,0 +1,61 @@
+{
+  "header.backToOverview": "Back to Overview",
+  "header.settings": "Settings",
+  "header.toggleLight": "Switch to light mode",
+  "header.toggleDark": "Switch to dark mode",
+
+  "sidebar.collapse": "Collapse sidebar",
+  "sidebar.expand": "Expand sidebar",
+  "sidebar.navigation": "Navigation",
+  "sidebar.siteList": "Sites",
+  "sidebar.overview": "Overview",
+
+  "overview.title": "Site Overview",
+  "overview.subtitle": "{count} site(s) total",
+  "overview.emptyTitle": "No site data",
+  "overview.emptyDesc": "Make sure the tracking code is properly integrated and there is valid traffic.",
+  "overview.selectPeriod": "Select period",
+
+  "time.today": "Today",
+  "time.yesterday": "Yesterday",
+  "time.last7days": "Last 7 days",
+  "time.last30days": "Last 30 days",
+  "time.last60days": "Last 60 days",
+  "time.last90days": "Last 90 days",
+  "time.hour": "",
+  "time.day": "",
+
+  "detail.views": "Views",
+  "detail.visitors": "Visitors",
+  "detail.visits": "Visits",
+  "detail.pages": "Pages",
+  "detail.referrers": "Referrers",
+  "detail.browsers": "Browsers",
+  "detail.os": "OS",
+  "detail.areas": "Areas",
+  "detail.none": "(None)",
+
+  "chart.views": "Page Views",
+  "chart.visitors": "Visitors",
+
+  "login.title": "Enter Password",
+  "login.placeholder": "Password",
+  "login.button": "Login",
+  "login.enterPassword": "Please enter your password",
+
+  "cycle.time": "Cycle Time",
+
+  "settings.title": "Settings",
+  "settings.language": "Language",
+  "settings.languageDesc": "Select display language",
+  "settings.theme": "Theme",
+  "settings.themeDesc": "Toggle dark/light mode",
+  "settings.light": "Light",
+  "settings.dark": "Dark",
+  "settings.system": "System",
+
+  "common.loading": "Loading...",
+  "common.save": "Save",
+  "common.cancel": "Cancel",
+  "common.close": "Close"
+}

@@ -2,8 +2,8 @@
   <div class="overview-container">
     <div class="overview-header">
       <div class="overview-header-left">
-        <h2 class="overview-title">站点总览</h2>
-        <p class="overview-subtitle">共 {{ sites.length }} 个站点</p>
+        <h2 class="overview-title">{{ t('overview.title') }}</h2>
+        <p class="overview-subtitle">{{ t('overview.subtitle', { count: sites.length }) }}</p>
       </div>
       <div class="overview-header-right">
         <div class="flex items-center gap-2 text-sm text-[#52525b]">
@@ -11,11 +11,11 @@
         </div>
         <Select :disabled="loading" :model-value="timeValue" @update:model-value="$emit('update:timeValue', $event)">
           <SelectTrigger class="w-[180px]">
-            <SelectValue placeholder="选择周期" />
+            <SelectValue :placeholder="t('overview.selectPeriod')" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Cycle Time</SelectLabel>
+              <SelectLabel>{{ t('cycle.time') }}</SelectLabel>
               <SelectItem :value="i.value" v-for="i in timeList" :key="i.name">{{ i.name }}</SelectItem>
             </SelectGroup>
           </SelectContent>
@@ -32,7 +32,7 @@
     <div v-else-if="initialized && sites.length === 0" class="empty-state">
       <Alert variant="default" class="max-w-md mx-auto">
         <AlertDescription>
-          <p>暂无站点数据。请确保已正确集成追踪代码并已有有效访问。</p>
+          <p>{{ t('overview.emptyTitle') }} {{ t('overview.emptyDesc') }}</p>
         </AlertDescription>
       </Alert>
     </div>
@@ -48,6 +48,9 @@ import SiteCard from "./SiteCard.vue";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Clock } from "lucide-vue-next";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 interface SiteOverview {
   id: string;
@@ -72,14 +75,16 @@ const emit = defineEmits<{
   "update:timeValue": [value: string];
 }>();
 
-const timeList = [
-  { name: "Today", value: "today" },
-  { name: "Yesterday", value: "1d" },
-  { name: "Last 7 days", value: "7d" },
-  { name: "Last 30 days", value: "30d" },
-  { name: "Last 60 days", value: "60d" },
-  { name: "Last 90 days", value: "90d" }
-];
+import { computed } from 'vue';
+
+const timeList = computed(() => [
+  { name: t('time.today'), value: "today" },
+  { name: t('time.yesterday'), value: "1d" },
+  { name: t('time.last7days'), value: "7d" },
+  { name: t('time.last30days'), value: "30d" },
+  { name: t('time.last60days'), value: "60d" },
+  { name: t('time.last90days'), value: "90d" }
+]);
 </script>
 
 <style scoped>

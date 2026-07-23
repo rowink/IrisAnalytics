@@ -7,11 +7,11 @@
         @click="$emit('select-overview')"
       >
         <LayoutDashboard class="nav-icon" />
-        <span v-if="!collapsed" class="nav-label">总览</span>
+          <span v-if="!collapsed" class="nav-label">{{ t('sidebar.overview') }}</span>
       </button>
 
       <div v-if="!collapsed" class="nav-divider">
-        <span>站点列表</span>
+        <span>{{ t('sidebar.siteList') }}</span>
       </div>
     </div>
 
@@ -39,12 +39,15 @@
 
 <script setup lang="ts">
 import { LayoutDashboard, Globe } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps<{
   collapsed: boolean
   siteList: { id: string; host: string }[]
   activeSite: string
-  activeView: 'overview' | 'detail'
+  activeView: 'overview' | 'detail' | 'settings'
   faviconFailed: Record<string, boolean>
 }>()
 

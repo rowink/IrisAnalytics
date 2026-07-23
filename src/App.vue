@@ -3,35 +3,36 @@
     <!-- Fixed Header -->
     <header>
       <div class="main">
-        <div class="logo" @click="switchToOverview" title="返回总览">
+        <div class="logo" @click="switchToOverview" :title="t('header.backToOverview')">
           <img src="./assets/moe.png" />
           <p>Iris</p>
         </div>
-        <button class="theme-toggle" @click="theme.toggle" :title="theme.isDark ? '切换亮色模式' : '切换暗黑模式'">
-          <Sun v-if="!theme.isDark" class="w-5 h-5" />
-          <Moon v-else class="w-5 h-5" />
-        </button>
+        <div class="header-actions">
+          <button class="theme-toggle" @click="theme.toggle" :title="theme.isDark ? t('header.toggleLight') : t('header.toggleDark')">
+            <Sun v-if="!theme.isDark" class="w-5 h-5" />
+            <Moon v-else class="w-5 h-5" />
+          </button>
+          <button class="icon-btn" @click="switchToSettings" :title="t('header.settings')">
+            <Settings class="w-5 h-5" />
+          </button>
+        </div>
         <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
           <Menu class="w-5 h-5" />
         </button>
       </div>
     </header>
 
-    <!-- Sidebar -->
-    <Sidebar :collapsed="sidebarCollapsed" :siteList="siteList" :activeSite="selectedSite" :activeView="viewMode" :mobileOpen="mobileMenuOpen" @toggle-collapse="sidebarCollapsed = !sidebarCollapsed" @select-overview="switchToOverview" @select-site="switchToDetail" @close-mobile="mobileMenuOpen = false" />
+    <!-- App Layout (Sidebar + Main) — hidden in settings -->
+    <template v-if="route.name !== 'settings'">
+      <Sidebar :collapsed="sidebarCollapsed" :siteList="siteList" :activeSite="activeSite" :activeView="activeView" :mobileOpen="mobileMenuOpen" @toggle-collapse="sidebarCollapsed = !sidebarCollapsed" @select-overview="switchToOverview" @select-site="switchToDetail" @close-mobile="mobileMenuOpen = false" />
 
-    <!-- Main Content -->
-    <main :class="['app-main', { 'sidebar-closed': sidebarCollapsed }]">
-      <!-- Overview Grid -->
-      <section v-if="viewMode === 'overview'" class="content-section">
-        <OverviewGrid :sites="overviewSites" :loading="overviewLoading" :initialized="initialized" :timeValue="timeValue" @select-site="switchToDetail" @update:timeValue="timeValue = $event" />
-      </section>
+      <main :class="['app-main', { 'sidebar-closed': sidebarCollapsed }]">
+        <router-view />
+      </main>
+    </template>
 
-      <!-- Site Detail -->
-      <section v-else class="content-section">
-        <SiteDetail v-if="selectedSite" :key="selectedSite + timeValue" :siteId="selectedSite" :timeValue="timeValue" @update:timeValue="timeValue = $event" />
-      </section>
-    </main>
+    <!-- Settings — full page, no sidebar -->
+    <router-view v-else />
   </section>
 
   <!-- Toaster -->
@@ -43,20 +44,21 @@
   <AlertDialog :open="authStatus">
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>请输入登录密码</AlertDialogTitle>
+        <AlertDialogTitle>{{ t("login.title") }}</AlertDialogTitle>
         <AlertDialogDescription />
       </AlertDialogHeader>
       <Input type="text" placeholder="Password" v-model="loginPassword" />
       <AlertDialogFooter>
-        <Button :disabled="loginStatus" @click="loginFn"> <Loader2 v-show="loginStatus" class="w-4 h-4 mr-2 animate-spin" />登录 </Button>
+        <Button :disabled="loginStatus" @click="loginFn"> <Loader2 v-show="loginStatus" class="w-4 h-4 mr-2 animate-spin" />{{ t("login.button") }} </Button>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
-import { Loader2, Menu, Sun, Moon } from "lucide-vue-next";
+import { ref, computed, watch, onMounted, provide } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { Loader2, Menu, Sun, Moon, Settings } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toast";
@@ -66,11 +68,13 @@ import { useStorage } from "@vueuse/core";
 import vh from "vh-plugin";
 
 import { useThemeStore } from "@/stores/theme";
+import { useI18n } from "vue-i18n";
 import Sidebar from "@/components/Sidebar.vue";
-import OverviewGrid from "@/components/OverviewGrid.vue";
-import SiteDetail from "@/components/SiteDetail.vue";
 
 const theme = useThemeStore();
+const { t } = useI18n();
+const router = useRouter();
+const route = useRoute();
 
 const { toast } = useToast();
 
@@ -81,7 +85,7 @@ const loginStatus = ref(false);
 const loginPassword = ref("");
 
 const loginFn = async () => {
-  if (!loginPassword.value) return toast({ description: "请输入密码", variant: "destructive" });
+  if (!loginPassword.value) return toast({ description: t("login.enterPassword"), variant: "destructive" });
   loginStatus.value = true;
   try {
     const res = await fetch("/api", {
@@ -100,9 +104,9 @@ const loginFn = async () => {
   }
 };
 
-// ── View State ──
-const viewMode = ref<"overview" | "detail">("overview");
-const selectedSite = ref("");
+// ── View State (route-derived) ──
+const activeView = computed(() => route.name as 'overview' | 'detail' | 'settings');
+const activeSite = computed(() => (route.params.id as string) || '');
 const sidebarCollapsed = ref(true);
 const mobileMenuOpen = ref(false);
 const timeValue = ref("today");
@@ -222,32 +226,47 @@ const fetchOverviewData = async () => {
 
 // ── Navigation ──
 const switchToOverview = () => {
-  viewMode.value = "overview";
-  selectedSite.value = "";
-  fetchOverviewData();
+  router.push('/');
 };
 
 const switchToDetail = (siteId: string) => {
-  selectedSite.value = siteId;
-  viewMode.value = "detail";
+  router.push(`/${siteId}`);
 };
+
+const switchToSettings = () => {
+  router.push('/settings');
+};
+
+// ── Initialize (declared early for provide) ──
+const initialized = ref(false);
+
+// ── Provide shared data for route components ──
+provide('timeValue', timeValue);
+provide('overviewSites', overviewSites);
+provide('overviewLoading', overviewLoading);
+provide('initialized', initialized);
 
 // ── Watch timeValue changes → re-fetch overview ──
 watch(timeValue, () => {
-  if (viewMode.value === "overview" && siteList.value.length > 0) {
+  if (route.name === 'overview' && siteList.value.length > 0) {
     fetchOverviewData();
   }
 });
 
-// ── Initialize ──
-const initialized = ref(false);
+// ── Watch route changes → re-fetch overview on navigation ──
+watch(() => route.name, (name) => {
+  if (name === 'overview' && siteList.value.length > 0) {
+    fetchOverviewData();
+  }
+});
 
 const initializeApp = async () => {
   const sites = await fetchSiteList();
   if (sites.length > 0) {
     siteList.value = sites;
-    viewMode.value = "overview";
-    await fetchOverviewData();
+    if (route.name === 'overview') {
+      await fetchOverviewData();
+    }
   }
   initialized.value = true;
 };
@@ -284,14 +303,30 @@ onMounted(async () => {
   box-sizing: border-box;
 }
 
-/* ── Theme toggle button ── */
-.theme-toggle {
+/* ── Settings full page override ── */
+.settings-full-page {
+  margin-left: 0 !important;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: calc(100vh - 56px);
+}
+
+/* ── Header action buttons (theme toggle + settings) ── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.theme-toggle,
+.icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  margin-left: auto;
   border: none;
   background: transparent;
   border-radius: 8px;
@@ -302,16 +337,19 @@ onMounted(async () => {
     color 0.15s;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.icon-btn:hover {
   background: #f4f4f5;
   color: #18181b;
 }
 
-:root.dark .theme-toggle {
+:root.dark .theme-toggle,
+:root.dark .icon-btn {
   color: #a1a1aa;
 }
 
-:root.dark .theme-toggle:hover {
+:root.dark .theme-toggle:hover,
+:root.dark .icon-btn:hover {
   background: #27272a;
   color: #f4f4f5;
 }
