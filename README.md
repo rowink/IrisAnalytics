@@ -1,13 +1,13 @@
-# Han-Analytics
 
-· Han-Analytics 是一个简单的网络分析跟踪器和仪表板，托管在被称为赛博菩萨的 Cloudflare 上,无成本稳定运行,每天可达10万次免费统计。
+<div style="text-align: center">
+    <img src="docs/moe.png"  width="200"/>
+    <h3>Iris Analytics</h3>
+</div>
 
-· 域名、服务器、数据库 通通都不用! 托管在 Cloudflare Pages 上即可快速部署网站分析仪表板。
+一个运行在Cloudflare的网络分析跟踪器和仪表板
 
 ### 页面截图
 
-![Han-Analytics](https://i0.wp.com/uxiaohan.github.io/v2/2024/09/1727007937.webp)
-![Han-Analytics](https://i0.wp.com/uxiaohan.github.io/v2/2024/09/1726993735.webp)
 
 ### 部署
 
