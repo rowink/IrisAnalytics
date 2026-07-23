@@ -1,10 +1,12 @@
+<p align="center">
+<img  src="docs/moe.png" alt="Logo" width="200px">
+</p>
 
-<div style="text-align: center">
-    <img src="docs/moe.png"  width="200"/>
-    <h3>Iris Analytics</h3>
-</div>
+<h2 align="center">
+Iris Analytics
+</h2>
 
-一个运行在Cloudflare的网络分析跟踪器和仪表板
+<p align="center">一个运行在Cloudflare的网络分析跟踪器和仪表板</p>
 
 ### 页面截图
 
