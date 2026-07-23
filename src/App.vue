@@ -3,7 +3,7 @@
     <!-- Fixed Header -->
     <header>
       <div class="main">
-        <div class="logo">
+        <div class="logo" @click="switchToOverview" title="返回总览">
           <img src="./assets/favicon.ico" />
         </div>
         <button class="theme-toggle" @click="theme.toggle" :title="theme.isDark ? '切换亮色模式' : '切换暗黑模式'">
