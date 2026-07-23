@@ -4,7 +4,8 @@
     <header>
       <div class="main">
         <div class="logo" @click="switchToOverview" title="返回总览">
-          <img src="./assets/favicon.ico" />
+          <img src="./assets/moe.png" />
+          <p>Iris</p>
         </div>
         <button class="theme-toggle" @click="theme.toggle" :title="theme.isDark ? '切换亮色模式' : '切换暗黑模式'">
           <Sun v-if="!theme.isDark" class="w-5 h-5" />
@@ -17,43 +18,19 @@
     </header>
 
     <!-- Sidebar -->
-    <Sidebar
-      :collapsed="sidebarCollapsed"
-      :siteList="siteList"
-      :activeSite="selectedSite"
-      :activeView="viewMode"
-      :mobileOpen="mobileMenuOpen"
-      @toggle-collapse="sidebarCollapsed = !sidebarCollapsed"
-      @select-overview="switchToOverview"
-      @select-site="switchToDetail"
-      @close-mobile="mobileMenuOpen = false"
-    />
+    <Sidebar :collapsed="sidebarCollapsed" :siteList="siteList" :activeSite="selectedSite" :activeView="viewMode" :mobileOpen="mobileMenuOpen" @toggle-collapse="sidebarCollapsed = !sidebarCollapsed" @select-overview="switchToOverview" @select-site="switchToDetail" @close-mobile="mobileMenuOpen = false" />
 
     <!-- Main Content -->
     <main :class="['app-main', { 'sidebar-closed': sidebarCollapsed }]">
       <!-- Overview Grid -->
       <section v-if="viewMode === 'overview'" class="content-section">
-        <OverviewGrid
-          :sites="overviewSites"
-          :loading="overviewLoading"
-          :initialized="initialized"
-          :timeValue="timeValue"
-          @select-site="switchToDetail"
-          @update:timeValue="timeValue = $event"
-        />
+        <OverviewGrid :sites="overviewSites" :loading="overviewLoading" :initialized="initialized" :timeValue="timeValue" @select-site="switchToDetail" @update:timeValue="timeValue = $event" />
       </section>
 
       <!-- Site Detail -->
       <section v-else class="content-section">
-        <SiteDetail
-          v-if="selectedSite"
-          :key="selectedSite + timeValue"
-          :siteId="selectedSite"
-          :timeValue="timeValue"
-          @update:timeValue="timeValue = $event"
-        />
+        <SiteDetail v-if="selectedSite" :key="selectedSite + timeValue" :siteId="selectedSite" :timeValue="timeValue" @update:timeValue="timeValue = $event" />
       </section>
-
     </main>
   </section>
 
@@ -71,220 +48,218 @@
       </AlertDialogHeader>
       <Input type="text" placeholder="Password" v-model="loginPassword" />
       <AlertDialogFooter>
-        <Button :disabled="loginStatus" @click="loginFn">
-          <Loader2 v-show="loginStatus" class="w-4 h-4 mr-2 animate-spin" />登录
-        </Button>
+        <Button :disabled="loginStatus" @click="loginFn"> <Loader2 v-show="loginStatus" class="w-4 h-4 mr-2 animate-spin" />登录 </Button>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import { Loader2, Menu, Sun, Moon } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Toaster } from '@/components/ui/toast'
-import { useToast } from '@/components/ui/toast/use-toast'
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
-import { useStorage } from '@vueuse/core'
-import vh from 'vh-plugin'
+import { ref, computed, watch, onMounted } from "vue";
+import { Loader2, Menu, Sun, Moon } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Toaster } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/toast/use-toast";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useStorage } from "@vueuse/core";
+import vh from "vh-plugin";
 
-import { useThemeStore } from '@/stores/theme'
-import Sidebar from '@/components/Sidebar.vue'
-import OverviewGrid from '@/components/OverviewGrid.vue'
-import SiteDetail from '@/components/SiteDetail.vue'
+import { useThemeStore } from "@/stores/theme";
+import Sidebar from "@/components/Sidebar.vue";
+import OverviewGrid from "@/components/OverviewGrid.vue";
+import SiteDetail from "@/components/SiteDetail.vue";
 
-const theme = useThemeStore()
+const theme = useThemeStore();
 
-const { toast } = useToast()
+const { toast } = useToast();
 
 // ── Auth ──
-const session = useStorage('session', '')
-const authStatus = ref(false)
-const loginStatus = ref(false)
-const loginPassword = ref('')
+const session = useStorage("session", "");
+const authStatus = ref(false);
+const loginStatus = ref(false);
+const loginPassword = ref("");
 
 const loginFn = async () => {
-  if (!loginPassword.value) return toast({ description: '请输入密码', variant: 'destructive' })
-  loginStatus.value = true
+  if (!loginPassword.value) return toast({ description: "请输入密码", variant: "destructive" });
+  loginStatus.value = true;
   try {
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'Login', session: loginPassword.value })
-    })
-    await new Promise(resolve => setTimeout(resolve, 666))
-    const data = await res.json()
-    if (!data.success) return toast({ description: data.message, variant: 'destructive' })
-    session.value = loginPassword.value
-    authStatus.value = false
-    initializeApp()
+    const res = await fetch("/api", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "Login", session: loginPassword.value })
+    });
+    await new Promise((resolve) => setTimeout(resolve, 666));
+    const data = await res.json();
+    if (!data.success) return toast({ description: data.message, variant: "destructive" });
+    session.value = loginPassword.value;
+    authStatus.value = false;
+    initializeApp();
   } finally {
-    loginStatus.value = false
+    loginStatus.value = false;
   }
-}
+};
 
 // ── View State ──
-const viewMode = ref<'overview' | 'detail'>('overview')
-const selectedSite = ref('')
-const sidebarCollapsed = ref(true)
-const mobileMenuOpen = ref(false)
-const timeValue = ref('today')
+const viewMode = ref<"overview" | "detail">("overview");
+const selectedSite = ref("");
+const sidebarCollapsed = ref(true);
+const mobileMenuOpen = ref(false);
+const timeValue = ref("today");
 
 // ── Site List ──
 interface SiteInfo {
-  id: string
-  host: string
+  id: string;
+  host: string;
 }
-const siteList = ref<SiteInfo[]>([])
+const siteList = ref<SiteInfo[]>([]);
 
 const fetchSiteList = async () => {
   try {
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'list', session: session.value })
-    })
-    const data = await res.json()
+    const res = await fetch("/api", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "list", session: session.value })
+    });
+    const data = await res.json();
     if (data.code && data.code === 401) {
-      session.value = ''
-      authStatus.value = true
-      return []
+      session.value = "";
+      authStatus.value = true;
+      return [];
     }
     if (!data.success) {
-      toast({ description: data.message, variant: 'destructive' })
-      return []
+      toast({ description: data.message, variant: "destructive" });
+      return [];
     }
-    return data.data as SiteInfo[]
+    return data.data as SiteInfo[];
   } catch (error) {
-    console.log(error)
-    return []
+    console.log(error);
+    return [];
   }
-}
+};
 
 // ── Overview Data ──
 interface SiteVisitData {
-  views?: number | string
-  visitor?: number | string
-  visit?: number | string
+  views?: number | string;
+  visitor?: number | string;
+  visit?: number | string;
 }
 
 interface SiteEchartsItem {
-  name: string
-  value: number | string
-  per?: string
+  name: string;
+  value: number | string;
+  per?: string;
 }
 
 interface SiteOverviewEntry {
-  id: string
-  host: string
-  visit: SiteVisitData
-  echarts: SiteEchartsItem[]
+  id: string;
+  host: string;
+  visit: SiteVisitData;
+  echarts: SiteEchartsItem[];
 }
 
-const overviewData = ref<Record<string, { visit: SiteVisitData; echarts: SiteEchartsItem[] }>>({})
-const overviewLoading = ref(false)
+const overviewData = ref<Record<string, { visit: SiteVisitData; echarts: SiteEchartsItem[] }>>({});
+const overviewLoading = ref(false);
 
 const overviewSites = computed<SiteOverviewEntry[]>(() => {
-  return siteList.value.map(site => ({
+  return siteList.value.map((site) => ({
     id: site.id,
     host: site.host,
     visit: overviewData.value[site.id]?.visit || {},
     echarts: overviewData.value[site.id]?.echarts || []
-  }))
-})
+  }));
+});
 
 const fetchOverviewData = async () => {
-  const sites = siteList.value
-  if (!sites.length) return
+  const sites = siteList.value;
+  if (!sites.length) return;
 
-  overviewLoading.value = true
-  vh.showLoading()
+  overviewLoading.value = true;
+  vh.showLoading();
 
   try {
     const results = await Promise.all(
       sites.map(async (site) => {
         try {
           const [visitRes, echartsRes] = await Promise.all([
-            fetch('/api', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'visit', siteID: site.id, time: timeValue.value, session: session.value })
+            fetch("/api", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: "visit", siteID: site.id, time: timeValue.value, session: session.value })
             }),
-            fetch('/api', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'echarts', siteID: site.id, time: timeValue.value, session: session.value })
+            fetch("/api", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: "echarts", siteID: site.id, time: timeValue.value, session: session.value })
             })
-          ])
+          ]);
 
-          const visitData = await visitRes.json()
-          const echartsData = await echartsRes.json()
+          const visitData = await visitRes.json();
+          const echartsData = await echartsRes.json();
 
           return {
             siteId: site.id,
             visit: visitData.success ? visitData.data : {},
             echarts: echartsData.success ? echartsData.data.views : []
-          }
+          };
         } catch (err) {
-          console.error(`Failed to fetch data for ${site.id}:`, err)
-          return { siteId: site.id, visit: {}, echarts: [] }
+          console.error(`Failed to fetch data for ${site.id}:`, err);
+          return { siteId: site.id, visit: {}, echarts: [] };
         }
       })
-    )
+    );
 
-    const dataMap: Record<string, { visit: SiteVisitData; echarts: SiteEchartsItem[] }> = {}
-    results.forEach(r => {
-      dataMap[r.siteId] = { visit: r.visit, echarts: r.echarts }
-    })
-    overviewData.value = dataMap
+    const dataMap: Record<string, { visit: SiteVisitData; echarts: SiteEchartsItem[] }> = {};
+    results.forEach((r) => {
+      dataMap[r.siteId] = { visit: r.visit, echarts: r.echarts };
+    });
+    overviewData.value = dataMap;
   } finally {
-    overviewLoading.value = false
-    vh.hideLoading()
+    overviewLoading.value = false;
+    vh.hideLoading();
   }
-}
+};
 
 // ── Navigation ──
 const switchToOverview = () => {
-  viewMode.value = 'overview'
-  selectedSite.value = ''
-  fetchOverviewData()
-}
+  viewMode.value = "overview";
+  selectedSite.value = "";
+  fetchOverviewData();
+};
 
 const switchToDetail = (siteId: string) => {
-  selectedSite.value = siteId
-  viewMode.value = 'detail'
-}
+  selectedSite.value = siteId;
+  viewMode.value = "detail";
+};
 
 // ── Watch timeValue changes → re-fetch overview ──
 watch(timeValue, () => {
-  if (viewMode.value === 'overview' && siteList.value.length > 0) {
-    fetchOverviewData()
+  if (viewMode.value === "overview" && siteList.value.length > 0) {
+    fetchOverviewData();
   }
-})
+});
 
 // ── Initialize ──
-const initialized = ref(false)
+const initialized = ref(false);
 
 const initializeApp = async () => {
-  const sites = await fetchSiteList()
+  const sites = await fetchSiteList();
   if (sites.length > 0) {
-    siteList.value = sites
-    viewMode.value = 'overview'
-    await fetchOverviewData()
+    siteList.value = sites;
+    viewMode.value = "overview";
+    await fetchOverviewData();
   }
-  initialized.value = true
-}
+  initialized.value = true;
+};
 
 onMounted(async () => {
   // Try loading data first — API returns 401 if password is required
-  await initializeApp()
-})
+  await initializeApp();
+});
 </script>
 
 <style scoped>
-@import '@/assets/index.less';
+@import "@/assets/index.less";
 
 /* ── Layout overrides for sidebar ── */
 .app-main {
@@ -322,7 +297,9 @@ onMounted(async () => {
   border-radius: 8px;
   cursor: pointer;
   color: #52525b;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .theme-toggle:hover {
@@ -351,7 +328,9 @@ onMounted(async () => {
   border-radius: 8px;
   cursor: pointer;
   color: #52525b;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .mobile-menu-btn:hover {
