@@ -188,6 +188,8 @@ const timeList = computed(() => [
 .empty-state-image {
   width: 400px;
   margin: auto;
+  user-select: none;
+  point-event: none;
 }
 
 .empty-state-title {

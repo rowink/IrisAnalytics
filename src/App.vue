@@ -4,7 +4,7 @@
     <header>
       <div class="main">
         <div class="logo" @click="switchToOverview" :title="t('header.backToOverview')">
-          <img src="./assets/moe.png" />
+          <img class="header-logo" src="./assets/moe.png" />
           <p>Iris</p>
         </div>
         <div class="header-actions">
@@ -106,17 +106,20 @@ const loginFn = async () => {
 };
 
 // ── View State (route-derived) ──
-const activeView = computed(() => route.name as 'overview' | 'detail' | 'settings');
-const activeSite = computed(() => (route.params.id as string) || '');
+const activeView = computed(() => route.name as "overview" | "detail" | "settings");
+const activeSite = computed(() => (route.params.id as string) || "");
 const sidebarCollapsed = ref(true);
 const mobileMenuOpen = ref(false);
 const settings = useSettingsStore();
 const timeValue = ref(settings.defaultTime);
 
 // ── Sync settings.defaultTime → timeValue when default changes
-watch(() => settings.defaultTime, (newVal) => {
-  timeValue.value = newVal;
-});
+watch(
+  () => settings.defaultTime,
+  (newVal) => {
+    timeValue.value = newVal;
+  }
+);
 
 // ── Site List ──
 interface SiteInfo {
@@ -233,7 +236,7 @@ const fetchOverviewData = async () => {
 
 // ── Navigation ──
 const switchToOverview = () => {
-  router.push('/');
+  router.push("/");
 };
 
 const switchToDetail = (siteId: string) => {
@@ -241,38 +244,41 @@ const switchToDetail = (siteId: string) => {
 };
 
 const switchToSettings = () => {
-  router.push('/settings');
+  router.push("/settings");
 };
 
 // ── Initialize (declared early for provide) ──
 const initialized = ref(false);
 
 // ── Provide shared data for route components ──
-provide('timeValue', timeValue);
-provide('overviewSites', overviewSites);
-provide('overviewLoading', overviewLoading);
-provide('initialized', initialized);
-provide('mobileMenuOpen', mobileMenuOpen);
+provide("timeValue", timeValue);
+provide("overviewSites", overviewSites);
+provide("overviewLoading", overviewLoading);
+provide("initialized", initialized);
+provide("mobileMenuOpen", mobileMenuOpen);
 
 // ── Watch timeValue changes → re-fetch overview ──
 watch(timeValue, () => {
-  if (route.name === 'overview' && siteList.value.length > 0) {
+  if (route.name === "overview" && siteList.value.length > 0) {
     fetchOverviewData();
   }
 });
 
 // ── Watch route changes → re-fetch overview on navigation ──
-watch(() => route.name, (name) => {
-  if (name === 'overview' && siteList.value.length > 0) {
-    fetchOverviewData();
+watch(
+  () => route.name,
+  (name) => {
+    if (name === "overview" && siteList.value.length > 0) {
+      fetchOverviewData();
+    }
   }
-});
+);
 
 const initializeApp = async () => {
   const sites = await fetchSiteList();
   if (sites.length > 0) {
     siteList.value = sites;
-    if (route.name === 'overview') {
+    if (route.name === "overview") {
       await fetchOverviewData();
     }
   }
@@ -326,6 +332,11 @@ onMounted(async () => {
   align-items: center;
   gap: 2px;
   margin-left: auto;
+}
+
+.header-logo {
+  user-select: none;
+  point-event: none;
 }
 
 .theme-toggle,
