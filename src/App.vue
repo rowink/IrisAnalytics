@@ -12,7 +12,7 @@
             <Sun v-if="!theme.isDark" class="w-5 h-5" />
             <Moon v-else class="w-5 h-5" />
           </button>
-          <button class="icon-btn" @click="switchToSettings" :title="t('header.settings')">
+          <button v-if="route.name !== 'settings'" class="icon-btn" @click="switchToSettings" :title="t('header.settings')">
             <Settings class="w-5 h-5" />
           </button>
         </div>
@@ -112,6 +112,11 @@ const sidebarCollapsed = ref(true);
 const mobileMenuOpen = ref(false);
 const settings = useSettingsStore();
 const timeValue = ref(settings.defaultTime);
+
+// ── Sync settings.defaultTime → timeValue when default changes
+watch(() => settings.defaultTime, (newVal) => {
+  timeValue.value = newVal;
+});
 
 // ── Site List ──
 interface SiteInfo {

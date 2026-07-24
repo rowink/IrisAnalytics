@@ -48,6 +48,9 @@
   "cycle.time": "Cycle Time",
 
   "settings.title": "Settings",
+  "settings.general": "General",
+  "settings.generalDesc": "Change page settings",
+  "settings.displayLanguage": "Display Language",
   "settings.language": "Language",
   "settings.languageDesc": "Select display language",
   "settings.defaultTime": "Default Time Range",
@@ -57,6 +60,9 @@
   "settings.light": "Light",
   "settings.dark": "Dark",
   "settings.system": "System",
+  "settings.about": "About",
+  "settings.aboutDesc": "App info & version",
+  "settings.aboutTagline": "Web Analytics Dashboard",
 
   "common.loading": "Loading...",
   "common.save": "Save",

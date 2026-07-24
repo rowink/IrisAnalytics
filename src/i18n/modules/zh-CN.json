@@ -47,7 +47,10 @@
 
   "cycle.time": "统计周期",
 
+  "settings.general": "通用",
+  "settings.generalDesc": "更改页面设定",
   "settings.title": "设置",
+  "settings.displayLanguage": "界面语言",
   "settings.language": "语言",
   "settings.languageDesc": "选择界面显示语言",
   "settings.defaultTime": "默认时间范围",
@@ -56,6 +59,9 @@
   "settings.themeDesc": "切换深色/浅色模式",
   "settings.light": "浅色",
   "settings.dark": "深色",
+  "settings.about": "关于",
+  "settings.aboutDesc": "应用信息与版本",
+  "settings.aboutTagline": "网站数据统计分析平台",
   "settings.system": "跟随系统",
 
   "common.loading": "加载中...",

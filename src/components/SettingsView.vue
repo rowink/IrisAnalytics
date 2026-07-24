@@ -39,8 +39,8 @@
     <div class="settings-content">
       <!-- General: Language -->
       <section v-if="activeTab === 'general'" class="settings-section">
-        <h3 class="section-title">{{ t("settings.language") }}</h3>
-        <p class="section-desc">{{ t("settings.languageDesc") }}</p>
+        <h3 class="section-title">{{ t("settings.general") }}</h3>
+        <p class="section-desc">{{ t("settings.generalDesc") }}</p>
         <div class="setting-card">
           <div class="setting-row">
             <div class="setting-info">
@@ -49,7 +49,7 @@
             </div>
             <div class="setting-control">
               <Select :model-value="settings.locale" @update:model-value="switchLocale($event as Locale)">
-                <SelectTrigger class="w-[180px]">
+                <SelectTrigger class="w-[130px] sm:w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -65,9 +65,7 @@
       </section>
 
       <!-- General: Default time -->
-      <section v-if="activeTab === 'general'" class="settings-section">
-        <h3 class="section-title">{{ t("settings.defaultTime") }}</h3>
-        <p class="section-desc">{{ t("settings.defaultTimeDesc") }}</p>
+      <section v-if="activeTab === 'general'" class="settings-section mt-5">
         <div class="setting-card">
           <div class="setting-row">
             <div class="setting-info">
@@ -75,18 +73,18 @@
               <span class="setting-desc">{{ t("settings.defaultTimeDesc") }}</span>
             </div>
             <div class="setting-control">
-              <Select :model-value="settings.defaultTime" @update:model-value="(v: string) => settings.defaultTime = v">
-                <SelectTrigger class="w-[180px]">
+              <Select :model-value="settings.defaultTime" @update:model-value="(v: string) => (settings.defaultTime = v)">
+                <SelectTrigger class="w-[130px] sm:w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="today">{{ t('time.today') }}</SelectItem>
-                    <SelectItem value="1d">{{ t('time.yesterday') }}</SelectItem>
-                    <SelectItem value="7d">{{ t('time.last7days') }}</SelectItem>
-                    <SelectItem value="30d">{{ t('time.last30days') }}</SelectItem>
-                    <SelectItem value="60d">{{ t('time.last60days') }}</SelectItem>
-                    <SelectItem value="90d">{{ t('time.last90days') }}</SelectItem>
+                    <SelectItem value="today">{{ t("time.today") }}</SelectItem>
+                    <SelectItem value="1d">{{ t("time.yesterday") }}</SelectItem>
+                    <SelectItem value="7d">{{ t("time.last7days") }}</SelectItem>
+                    <SelectItem value="30d">{{ t("time.last30days") }}</SelectItem>
+                    <SelectItem value="60d">{{ t("time.last60days") }}</SelectItem>
+                    <SelectItem value="90d">{{ t("time.last90days") }}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -107,7 +105,7 @@
             </div>
             <div class="setting-control">
               <Select :model-value="theme.isDark ? 'dark' : 'light'" @update:model-value="theme.isDark = $event === 'dark'">
-                <SelectTrigger class="w-[180px]">
+                <SelectTrigger class="w-[130px] sm:w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -124,7 +122,8 @@
 
       <!-- About -->
       <section v-if="activeTab === 'about'" class="settings-section">
-        <h3 class="section-title">About</h3>
+        <h3 class="section-title">{{ t("settings.about") }}</h3>
+        <p class="section-desc">{{ t("settings.aboutDesc") }}</p>
         <div class="setting-card about-card">
           <div class="about-info">
             <div class="about-logo">
@@ -132,7 +131,7 @@
               <span>Iris Analytics</span>
             </div>
             <p class="about-version">v1.0.0</p>
-            <p class="about-desc">Web Analytics Dashboard</p>
+            <p class="about-desc">{{ t("settings.aboutTagline") }}</p>
           </div>
         </div>
       </section>
@@ -168,9 +167,9 @@ const selectTab = (key: string) => {
 const goBack = () => router.push("/");
 
 const tabs = computed(() => [
-  { key: "general", label: t("settings.language"), icon: Settings },
+      { key: "general", label: t("settings.general"), icon: Settings },
   { key: "appearance", label: t("settings.theme"), icon: Palette },
-  { key: "about", label: "About", icon: Info }
+  { key: "about", label: t("settings.about"), icon: Info }
 ]);
 
 function switchLocale(locale: Locale) {
