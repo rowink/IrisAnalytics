@@ -1,18 +1,39 @@
 <template>
   <div class="settings-view">
     <!-- Left nav (GitHub style) -->
+    <!-- Left nav (desktop) -->
     <nav class="settings-nav">
       <div class="nav-header">
         <button class="back-btn" @click="goBack" :title="t('header.backToOverview')">
-          <ArrowLeft class="w-4 h-4" />
+          <ChevronLeft class="w-4 h-4" />
         </button>
         <span>设置</span>
       </div>
-      <button v-for="tab in tabs" :key="tab.key" class="nav-item" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
+      <button v-for="tab in tabs" :key="tab.key" class="nav-item" :class="{ active: activeTab === tab.key }" @click="selectTab(tab.key)">
         <component :is="tab.icon" class="nav-icon" />
         <span>{{ tab.label }}</span>
       </button>
     </nav>
+
+    <!-- Mobile drawer -->
+    <Teleport to="body">
+      <Transition name="drawer">
+        <div v-if="isMobile && mobileMenuOpen" class="drawer-overlay" @click.self="mobileMenuOpen = false">
+          <aside class="mobile-nav">
+            <div class="mobile-nav-header">
+              <span>设置</span>
+              <button class="close-btn" @click="mobileMenuOpen = false">
+                <X class="w-4 h-4" />
+              </button>
+            </div>
+            <button v-for="tab in tabs" :key="tab.key" class="nav-item" :class="{ active: activeTab === tab.key }" @click="selectTab(tab.key)">
+              <component :is="tab.icon" class="nav-icon" />
+              <span>{{ tab.label }}</span>
+            </button>
+          </aside>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Right content -->
     <div class="settings-content">
@@ -35,6 +56,37 @@
                   <SelectGroup>
                     <SelectItem value="zh-CN">中文</SelectItem>
                     <SelectItem value="en">English</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- General: Default time -->
+      <section v-if="activeTab === 'general'" class="settings-section">
+        <h3 class="section-title">{{ t("settings.defaultTime") }}</h3>
+        <p class="section-desc">{{ t("settings.defaultTimeDesc") }}</p>
+        <div class="setting-card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">{{ t("settings.defaultTime") }}</span>
+              <span class="setting-desc">{{ t("settings.defaultTimeDesc") }}</span>
+            </div>
+            <div class="setting-control">
+              <Select :model-value="settings.defaultTime" @update:model-value="(v: string) => settings.defaultTime = v">
+                <SelectTrigger class="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="today">{{ t('time.today') }}</SelectItem>
+                    <SelectItem value="1d">{{ t('time.yesterday') }}</SelectItem>
+                    <SelectItem value="7d">{{ t('time.last7days') }}</SelectItem>
+                    <SelectItem value="30d">{{ t('time.last30days') }}</SelectItem>
+                    <SelectItem value="60d">{{ t('time.last60days') }}</SelectItem>
+                    <SelectItem value="90d">{{ t('time.last90days') }}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -89,9 +141,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, inject } from "vue";
 import { useRouter } from "vue-router";
-import { Settings, Palette, Info, ArrowLeft } from "lucide-vue-next";
+import { Settings, Palette, Info, ChevronLeft, X } from "lucide-vue-next";
+import { useMediaQuery } from "@vueuse/core";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
@@ -104,6 +157,13 @@ const { t } = useI18n();
 const router = useRouter();
 
 const activeTab = ref("general");
+const isMobile = useMediaQuery("(max-width: 768px)");
+const mobileMenuOpen = inject("mobileMenuOpen") as any;
+
+const selectTab = (key: string) => {
+  activeTab.value = key;
+  if (isMobile.value) mobileMenuOpen.value = false;
+};
 
 const goBack = () => router.push("/");
 
@@ -354,6 +414,97 @@ function switchLocale(locale: Locale) {
   color: #a1a1aa;
 }
 
+/* ── Mobile drawer ── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999999;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+}
+
+.mobile-nav {
+  width: 260px;
+  height: 100%;
+  background: #fff;
+  border-right: 1px solid #e4e4e7;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 2px;
+}
+
+:root.dark .mobile-nav {
+  background: #09090b;
+  border-right-color: #27272a;
+}
+
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #18181b;
+}
+
+:root.dark .mobile-nav-header {
+  color: #f4f4f5;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #52525b;
+  transition: background 0.15s;
+}
+
+.close-btn:hover {
+  background: #f4f4f5;
+}
+
+:root.dark .close-btn {
+  color: #a1a1aa;
+}
+
+:root.dark .close-btn:hover {
+  background: #27272a;
+}
+
+/* ── Mobile header ── */
+.mobile-settings-header {
+  display: none;
+}
+
+/* ── Drawer transition ── */
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.drawer-enter-from,
+.drawer-leave-to {
+  opacity: 0;
+}
+
+.drawer-enter-active .mobile-nav,
+.drawer-leave-active .mobile-nav {
+  transition: transform 0.2s ease;
+}
+
+.drawer-enter-from .mobile-nav,
+.drawer-leave-to .mobile-nav {
+  transform: translateX(-100%);
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .settings-view {
@@ -364,25 +515,7 @@ function switchLocale(locale: Locale) {
   }
 
   .settings-nav {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    border-right: none;
-    border-bottom: 1px solid #e4e4e7;
-    padding: 8px;
-  }
-
-  :root.dark .settings-nav {
-    border-bottom-color: #27272a;
-  }
-
-  .nav-header {
     display: none;
-  }
-
-  .nav-item {
-    white-space: nowrap;
-    flex-shrink: 0;
   }
 
   .settings-content {

@@ -6,18 +6,19 @@ export const useSettingsStore = defineStore(
   'settings',
   () => {
     const locale = ref<Locale>('zh-CN')
+    const defaultTime = ref('today')
 
     function setLocale(l: Locale) {
       locale.value = l
     }
 
-    return { locale, setLocale }
+    return { locale, defaultTime, setLocale }
   },
   {
     persist: {
-      key: 'app-locale',
+      key: 'app-settings',
       storage: localStorage,
-      pick: ['locale'],
+      pick: ['locale', 'defaultTime'],
     },
   },
 )

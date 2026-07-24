@@ -15,6 +15,8 @@
   "overview.emptyTitle": "No site data",
   "overview.emptyDesc": "Make sure the tracking code is properly integrated and there is valid traffic.",
   "overview.selectPeriod": "Select period",
+  "overview.searchPlaceholder": "Search sites...",
+  "overview.noSearchResults": "No matching sites found",
 
   "time.today": "Today",
   "time.yesterday": "Yesterday",
@@ -48,6 +50,8 @@
   "settings.title": "Settings",
   "settings.language": "Language",
   "settings.languageDesc": "Select display language",
+  "settings.defaultTime": "Default Time Range",
+  "settings.defaultTimeDesc": "Set the default time filter option",
   "settings.theme": "Theme",
   "settings.themeDesc": "Toggle dark/light mode",
   "settings.light": "Light",

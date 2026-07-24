@@ -1,6 +1,6 @@
 <template>
   <Card
-    class="site-card cursor-pointer transition-all duration-150 hover:shadow-md hover:border-[#4f6ef7]/30"
+    class="site-card group relative cursor-pointer transition-all duration-150 hover:shadow-md hover:border-[#4f6ef7]/30"
     @click="$emit('select', siteId)"
   >
     <CardHeader class="pb-3">
@@ -14,6 +14,25 @@
         />
         <Globe v-else class="w-4 h-4 text-[#4f6ef7]" />
         <CardTitle class="text-sm font-medium line-clamp-1">{{ siteId }}</CardTitle>
+      </div>
+      <!-- Pin/Unpin overlay -->
+      <div v-if="!loading" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          v-if="pinned"
+          class="p-1 rounded-md hover:bg-[#f4f4f5] dark:hover:bg-[#27272a] text-[#4f6ef7] transition-colors"
+          :title="'取消置顶'"
+          @click.stop="$emit('unpin', siteId)"
+        >
+          <PinOff class="w-4 h-4" />
+        </button>
+        <button
+          v-else
+          class="p-1 rounded-md hover:bg-[#f4f4f5] dark:hover:bg-[#27272a] text-[#a1a1aa] hover:text-[#4f6ef7] transition-colors"
+          :title="'置顶'"
+          @click.stop="$emit('pin', siteId)"
+        >
+          <Pin class="w-4 h-4" />
+        </button>
       </div>
     </CardHeader>
     <CardContent class="pt-0">
@@ -58,7 +77,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, markRaw, computed } from 'vue'
 import * as echarts from 'echarts'
-import { Globe } from 'lucide-vue-next'
+import { Globe, Pin, PinOff } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -73,12 +92,15 @@ const props = defineProps<{
   }
   echartsData?: Array<{ name: string; value: number | string; per?: string }>
   loading?: boolean
+  pinned?: boolean
 }>()
 const faviconFailed = ref(false)
 const theme = useThemeStore()
 
 defineEmits<{
   select: [siteId: string]
+  pin: [siteId: string]
+  unpin: [siteId: string]
 }>()
 
 const displayVisit = computed(() => ({

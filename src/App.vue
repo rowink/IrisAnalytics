@@ -68,6 +68,7 @@ import { useStorage } from "@vueuse/core";
 import vh from "vh-plugin";
 
 import { useThemeStore } from "@/stores/theme";
+import { useSettingsStore } from "@/stores/settings";
 import { useI18n } from "vue-i18n";
 import Sidebar from "@/components/Sidebar.vue";
 
@@ -109,7 +110,8 @@ const activeView = computed(() => route.name as 'overview' | 'detail' | 'setting
 const activeSite = computed(() => (route.params.id as string) || '');
 const sidebarCollapsed = ref(true);
 const mobileMenuOpen = ref(false);
-const timeValue = ref("today");
+const settings = useSettingsStore();
+const timeValue = ref(settings.defaultTime);
 
 // ── Site List ──
 interface SiteInfo {
@@ -245,6 +247,7 @@ provide('timeValue', timeValue);
 provide('overviewSites', overviewSites);
 provide('overviewLoading', overviewLoading);
 provide('initialized', initialized);
+provide('mobileMenuOpen', mobileMenuOpen);
 
 // ── Watch timeValue changes → re-fetch overview ──
 watch(timeValue, () => {
