@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, shallowRef } from "vue";
 import type { Component, VNode } from "vue";
 import type { ToastProps } from ".";
 
@@ -68,14 +68,14 @@ function addToRemoveQueue(toastId: string) {
   toastTimeouts.set(toastId, timeout);
 }
 
-const state = ref<State>({
+const state = shallowRef<State>({
   toasts: []
 });
 
 function dispatch(action: Action) {
   switch (action.type) {
     case actionTypes.ADD_TOAST:
-      state.value.toasts = [action.toast, ...state.value.toasts].slice(0, TOAST_LIMIT);
+      state.value.toasts = [action.toast].concat(state.value.toasts).slice(0, TOAST_LIMIT);
       break;
 
     case actionTypes.UPDATE_TOAST:

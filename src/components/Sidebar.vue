@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { useMediaQuery } from "@vueuse/core";
-import { PanelLeftClose, PanelLeftOpen, LayoutDashboard, Globe, X } from "lucide-vue-next";
+import { PanelLeftClose, PanelLeftOpen, X } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
 import SidebarNav from "./SidebarNav.vue";
 
@@ -51,7 +51,7 @@ const onFaviconError = (site: string) => {
   faviconFailed[site] = true;
 };
 
-const props = defineProps<{
+defineProps<{
   collapsed: boolean;
   siteList: { id: string; host: string }[];
   activeSite: string;

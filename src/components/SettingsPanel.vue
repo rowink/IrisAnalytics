@@ -83,7 +83,7 @@ import { useI18n } from "vue-i18n";
 import type { Locale } from "@/i18n/locales";
 
 defineProps<{ open: boolean }>();
-const emit = defineEmits<{ close: [] }>();
+defineEmits<{ close: [] }>();
 
 const settings = useSettingsStore();
 const theme = useThemeStore();

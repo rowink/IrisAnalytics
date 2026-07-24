@@ -213,7 +213,7 @@ const props = defineProps<{
   timeValue: string;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
   "update:timeValue": [value: string];
 }>();
 
@@ -226,15 +226,56 @@ const timeList = computed(() => [
   { name: t("time.last90days"), value: "90d" }
 ]);
 
+// Data types
+interface ListItem {
+  name: string;
+  value: number | string;
+  per?: string;
+}
+
+interface AreaItem {
+  name: string;
+  code: string;
+  value: number | string;
+  per?: string;
+}
+
+interface VisitData {
+  views?: number | string;
+  visitor?: number | string;
+  visit?: number | string;
+}
+
+interface SiteEchartsData {
+  views: Array<{ name: string; value: number }>;
+  visitors: Array<{ name: string; value: number }>;
+}
+
+interface SiteDetailData {
+  visit: VisitData;
+  path?: ListItem[];
+  referrer?: ListItem[];
+  os?: ListItem[];
+  soft?: ListItem[];
+  area?: AreaItem[];
+  echarts?: SiteEchartsData;
+}
+
+interface ChartData {
+  dates: string[];
+  views: (number | string)[];
+  visitors: (number | string)[];
+}
+
 // Data state
-const resData = ref<any>({ visit: {} });
-const tempResData = ref<any>({ visit: {} });
+const resData = ref<SiteDetailData>({ visit: {} });
+const tempResData = ref<SiteDetailData>({ visit: {} });
 const getDatasStatus = ref(false);
 
 // ECharts
 const echartsDOM = ref<HTMLDivElement>();
 let canvasMain: echarts.ECharts | null = null;
-const lastChartData = ref<{ dates: any[]; views: any[]; visitors: any[] }>({ dates: [], views: [], visitors: [] });
+const lastChartData = ref<ChartData>({ dates: [], views: [], visitors: [] });
 
 const getIconUrl = (url: string) => {
   if (!url) return "https://icons.duckduckgo.com/ip3/none.ico";
@@ -260,7 +301,7 @@ function chartColors(isDark: boolean) {
   };
 }
 
-const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList: Array<any>) => {
+const renderEcharts = (dateList: string[], viewsList: (number | string)[], visitorsList: (number | string)[]) => {
   if (!canvasMain) return;
   lastChartData.value = { dates: dateList, views: viewsList, visitors: visitorsList };
   const c = chartColors(theme.isDark);
@@ -350,7 +391,7 @@ const getDatas = async () => {
   resData.value = { visit: {} };
   tempResData.value = { visit: {} };
 
-  const pmsARR = ["visit", "path", "referrer", "os", "soft", "area", "echarts"];
+  const pmsARR = ["visit", "path", "referrer", "os", "soft", "area", "echarts"] as const;
   getDatasStatus.value = true;
   vh.showLoading();
 
@@ -376,9 +417,9 @@ const getDatas = async () => {
           return;
         }
         if (type === "echarts") {
-          const dates = data.data.views.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? t("time.hour") : t("time.day")}`);
-          const views = data.data.views.map((i: any) => i.value);
-          const visitors = data.data.visitors.map((i: any) => i.value);
+          const dates = data.data.views.map((i: { name: string; value: number }) => `${i.name}${["today", "1d"].includes(props.timeValue) ? t("time.hour") : t("time.day")}`);
+          const views = data.data.views.map((i: { name: string; value: number }) => i.value);
+          const visitors = data.data.visitors.map((i: { name: string; value: number }) => i.value);
           renderEcharts(dates, views, visitors);
           tempResData.value[type] = data.data;
         } else {

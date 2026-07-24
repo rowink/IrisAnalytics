@@ -141,6 +141,7 @@
 
 <script setup lang="ts">
 import { ref, computed, inject } from "vue";
+import type { Ref } from "vue";
 import { useRouter } from "vue-router";
 import { Settings, Palette, Info, ChevronLeft, X } from "lucide-vue-next";
 import { useMediaQuery } from "@vueuse/core";
@@ -157,7 +158,7 @@ const router = useRouter();
 
 const activeTab = ref("general");
 const isMobile = useMediaQuery("(max-width: 768px)");
-const mobileMenuOpen = inject("mobileMenuOpen") as any;
+const mobileMenuOpen = inject<Ref<boolean>>("mobileMenuOpen")!;
 
 const selectTab = (key: string) => {
   activeTab.value = key;

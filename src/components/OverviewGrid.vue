@@ -53,7 +53,6 @@
 
 <script setup lang="ts">
 import SiteCard from "./SiteCard.vue";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Clock, Search } from "lucide-vue-next";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -80,7 +79,7 @@ const props = defineProps<{
   timeValue: string;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
   "select-site": [siteId: string];
   "update:timeValue": [value: string];
 }>();
