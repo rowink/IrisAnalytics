@@ -1,33 +1,16 @@
 <template>
   <!-- ── Desktop sidebar (hidden on mobile via CSS) ── -->
-  <aside
-    v-show="!isMobile"
-    class="sidebar"
-    :class="{ collapsed }"
-  >
+  <aside v-show="!isMobile" class="sidebar" :class="{ collapsed }">
     <div class="sidebar-inner">
       <div class="sidebar-header">
-        <button
-          class="toggle-btn"
-          @click="$emit('toggle-collapse')"
-          :title="collapsed ? t('sidebar.expand') : t('sidebar.collapse')"
-        >
+        <button class="toggle-btn" @click="$emit('toggle-collapse')" :title="collapsed ? t('sidebar.expand') : t('sidebar.collapse')">
           <PanelLeftClose v-if="!collapsed" />
           <PanelLeftOpen v-else />
         </button>
-          <span v-if="!collapsed" class="sidebar-title">{{ t('sidebar.navigation') }}</span>
+        <span v-if="!collapsed" class="sidebar-title">{{ t("sidebar.navigation") }}</span>
       </div>
 
-      <SidebarNav
-        :collapsed="collapsed"
-        :site-list="siteList"
-        :active-site="activeSite"
-        :active-view="activeView"
-        :favicon-failed="faviconFailed"
-        @select-overview="onSelectOverview"
-        @select-site="onSelectSite"
-        @favicon-error="onFaviconError"
-      />
+      <SidebarNav :collapsed="collapsed" :site-list="siteList" :active-site="activeSite" :active-view="activeView" :favicon-failed="faviconFailed" @select-overview="onSelectOverview" @select-site="onSelectSite" @favicon-error="onFaviconError" />
     </div>
   </aside>
 
@@ -38,22 +21,13 @@
         <aside class="mobile-sidebar">
           <div class="sidebar-inner">
             <div class="sidebar-header">
-              <span class="sidebar-title">{{ t('sidebar.navigation') }}</span>
+              <span class="sidebar-title">{{ t("sidebar.navigation") }}</span>
               <button class="close-btn" @click="$emit('close-mobile')">
                 <X />
               </button>
             </div>
 
-            <SidebarNav
-              :collapsed="false"
-              :site-list="siteList"
-              :active-site="activeSite"
-              :active-view="activeView"
-              :favicon-failed="faviconFailed"
-              @select-overview="onSelectOverview"
-              @select-site="onSelectSite"
-              @favicon-error="onFaviconError"
-            />
+            <SidebarNav :collapsed="false" :site-list="siteList" :active-site="activeSite" :active-view="activeView" :favicon-failed="faviconFailed" @select-overview="onSelectOverview" @select-site="onSelectSite" @favicon-error="onFaviconError" />
           </div>
         </aside>
       </div>
@@ -62,41 +36,41 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { useMediaQuery } from '@vueuse/core'
-import { PanelLeftClose, PanelLeftOpen, LayoutDashboard, Globe, X } from 'lucide-vue-next'
-import { useI18n } from 'vue-i18n'
-import SidebarNav from './SidebarNav.vue'
+import { reactive } from "vue";
+import { useMediaQuery } from "@vueuse/core";
+import { PanelLeftClose, PanelLeftOpen, LayoutDashboard, Globe, X } from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
+import SidebarNav from "./SidebarNav.vue";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const isMobile = useMediaQuery('(max-width: 768px)')
+const isMobile = useMediaQuery("(max-width: 768px)");
 
-const faviconFailed = reactive<Record<string, boolean>>({})
+const faviconFailed = reactive<Record<string, boolean>>({});
 const onFaviconError = (site: string) => {
-  faviconFailed[site] = true
-}
+  faviconFailed[site] = true;
+};
 
 const props = defineProps<{
-  collapsed: boolean
-  siteList: { id: string; host: string }[]
-  activeSite: string
-  activeView: 'overview' | 'detail' | 'settings'
-  mobileOpen?: boolean
-}>()
+  collapsed: boolean;
+  siteList: { id: string; host: string }[];
+  activeSite: string;
+  activeView: "overview" | "detail" | "settings";
+  mobileOpen?: boolean;
+}>();
 
 const emit = defineEmits<{
-  'toggle-collapse': []
-  'select-overview': []
-  'select-site': [siteId: string]
-  'close-mobile': []
-}>()
+  "toggle-collapse": [];
+  "select-overview": [];
+  "select-site": [siteId: string];
+  "close-mobile": [];
+}>();
 
-const onSelectOverview = () => emit('select-overview')
+const onSelectOverview = () => emit("select-overview");
 const onSelectSite = (siteId: string) => {
-  emit('select-site', siteId)
-  emit('close-mobile')
-}
+  emit("select-site", siteId);
+  emit("close-mobile");
+};
 </script>
 
 <style scoped>

@@ -167,7 +167,7 @@ const selectTab = (key: string) => {
 const goBack = () => router.push("/");
 
 const tabs = computed(() => [
-      { key: "general", label: t("settings.general"), icon: Settings },
+  { key: "general", label: t("settings.general"), icon: Settings },
   { key: "appearance", label: t("settings.theme"), icon: Palette },
   { key: "about", label: t("settings.about"), icon: Info }
 ]);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SettingsView from '@/components/SettingsView.vue'
+import SettingsView from "@/components/SettingsView.vue";
 </script>
 
 <template>

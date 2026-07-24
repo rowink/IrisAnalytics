@@ -1,35 +1,19 @@
 <template>
   <nav class="sidebar-nav">
     <div class="nav-fixed">
-      <button
-        class="nav-item"
-        :class="{ active: activeView === 'overview' }"
-        @click="$emit('select-overview')"
-      >
+      <button class="nav-item" :class="{ active: activeView === 'overview' }" @click="$emit('select-overview')">
         <LayoutDashboard class="nav-icon" />
-          <span v-if="!collapsed" class="nav-label">{{ t('sidebar.overview') }}</span>
+        <span v-if="!collapsed" class="nav-label">{{ t("sidebar.overview") }}</span>
       </button>
 
       <div v-if="!collapsed" class="nav-divider">
-        <span>{{ t('sidebar.siteList') }}</span>
+        <span>{{ t("sidebar.siteList") }}</span>
       </div>
     </div>
 
     <div class="nav-scroll">
-      <button
-        v-for="site in siteList"
-        :key="site.id"
-        class="nav-item site-item"
-        :class="{ active: activeView === 'detail' && activeSite === site.id }"
-        @click="$emit('select-site', site.id)"
-      >
-        <img
-          v-if="!faviconFailed[site.id]"
-          class="nav-icon"
-          :src="`https://icons.duckduckgo.com/ip3/${site.host}.ico`"
-          referrerpolicy="no-referrer"
-          @error="onFaviconError(site.id)"
-        />
+      <button v-for="site in siteList" :key="site.id" class="nav-item site-item" :class="{ active: activeView === 'detail' && activeSite === site.id }" @click="$emit('select-site', site.id)">
+        <img v-if="!faviconFailed[site.id]" class="nav-icon" :src="`https://icons.duckduckgo.com/ip3/${site.host}.ico`" referrerpolicy="no-referrer" @error="onFaviconError(site.id)" />
         <Globe v-else class="nav-icon" />
         <span v-if="!collapsed" class="nav-label line-clamp-1">{{ site.id }}</span>
       </button>
@@ -38,28 +22,28 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutDashboard, Globe } from 'lucide-vue-next'
-import { useI18n } from 'vue-i18n'
+import { LayoutDashboard, Globe } from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 defineProps<{
-  collapsed: boolean
-  siteList: { id: string; host: string }[]
-  activeSite: string
-  activeView: 'overview' | 'detail' | 'settings'
-  faviconFailed: Record<string, boolean>
-}>()
+  collapsed: boolean;
+  siteList: { id: string; host: string }[];
+  activeSite: string;
+  activeView: "overview" | "detail" | "settings";
+  faviconFailed: Record<string, boolean>;
+}>();
 
 const emit = defineEmits<{
-  'select-overview': []
-  'select-site': [siteId: string]
-  'favicon-error': [siteId: string]
-}>()
+  "select-overview": [];
+  "select-site": [siteId: string];
+  "favicon-error": [siteId: string];
+}>();
 
 const onFaviconError = (siteId: string) => {
-  emit('favicon-error', siteId)
-}
+  emit("favicon-error", siteId);
+};
 </script>
 
 <style scoped>
@@ -134,7 +118,7 @@ const onFaviconError = (siteId: string) => {
 }
 
 .nav-divider::after {
-  content: '';
+  content: "";
   flex: 1;
   height: 1px;
   background: #f0f0f0;
