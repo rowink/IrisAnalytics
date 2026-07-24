@@ -4,21 +4,21 @@
     <div class="detail-controls">
       <div class="stats-bar">
         <div class="stats-item">
-          <span>{{ t('detail.views') }}</span>
+          <span>{{ t("detail.views") }}</span>
           <div class="space-y-2" v-if="resData.visit.views === undefined">
             <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.views }}</p>
         </div>
         <div class="stats-item">
-          <span>{{ t('detail.visitors') }}</span>
+          <span>{{ t("detail.visitors") }}</span>
           <div class="space-y-2" v-if="resData.visit.visitor === undefined">
             <Skeleton class="h-6 w-16" />
           </div>
           <p v-else>{{ resData.visit.visitor }}</p>
         </div>
         <div class="stats-item">
-          <span>{{ t('detail.visits') }}</span>
+          <span>{{ t("detail.visits") }}</span>
           <div class="space-y-2" v-if="resData.visit.visit === undefined">
             <Skeleton class="h-6 w-16" />
           </div>
@@ -41,7 +41,7 @@
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>{{ t('cycle.time') }}</SelectLabel>
+                <SelectLabel>{{ t("cycle.time") }}</SelectLabel>
                 <SelectItem :value="i.value" v-for="i in timeList" :key="i.name">{{ i.name }}</SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -57,7 +57,7 @@
     <div class="pt-6 grid md:grid-cols-2 sm:grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t('detail.pages') }}</CardTitle>
+          <CardTitle>{{ t("detail.pages") }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.path != undefined">
@@ -82,14 +82,14 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t('detail.referrers') }}</CardTitle>
+          <CardTitle>{{ t("detail.referrers") }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.referrer != undefined">
             <p class="page-item" v-for="(i, idx) in resData.referrer" :key="idx">
               <img v-if="i.name" :src="getIconUrl(i.name)" />
               <a :href="i.name" target="_blank" rel="noopener noreferrer" class="line-clamp-1 cursor-pointer">
-                {{ i.name || t('detail.none') }}
+                {{ i.name || t("detail.none") }}
               </a>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
@@ -113,7 +113,7 @@
     <div class="grid xl:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t('detail.browsers') }}</CardTitle>
+          <CardTitle>{{ t("detail.browsers") }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.soft != undefined">
@@ -138,7 +138,7 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t('detail.os') }}</CardTitle>
+          <CardTitle>{{ t("detail.os") }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.os != undefined">
@@ -164,7 +164,7 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t('detail.areas') }}</CardTitle>
+          <CardTitle>{{ t("detail.areas") }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.area != undefined">
@@ -196,7 +196,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
 import * as echarts from "echarts";
 import { Clock } from "lucide-vue-next";
 import { useThemeStore } from "@/stores/theme";
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -218,12 +218,12 @@ const emit = defineEmits<{
 }>();
 
 const timeList = computed(() => [
-  { name: t('time.today'), value: "today" },
-  { name: t('time.yesterday'), value: "1d" },
-  { name: t('time.last7days'), value: "7d" },
-  { name: t('time.last30days'), value: "30d" },
-  { name: t('time.last60days'), value: "60d" },
-  { name: t('time.last90days'), value: "90d" }
+  { name: t("time.today"), value: "today" },
+  { name: t("time.yesterday"), value: "1d" },
+  { name: t("time.last7days"), value: "7d" },
+  { name: t("time.last30days"), value: "30d" },
+  { name: t("time.last60days"), value: "60d" },
+  { name: t("time.last90days"), value: "90d" }
 ]);
 
 // Data state
@@ -242,7 +242,7 @@ const getIconUrl = (url: string) => {
   return `https://icons.duckduckgo.com/ip3/${_url.hostname}.ico`;
 };
 
-const getIcon = (code: string) => `${location.origin}/icon/${code}.png`;
+const getIcon = (code: string) => `${location.origin}/icon/badge/${code}.png`;
 
 function chartColors(isDark: boolean) {
   return {
@@ -256,7 +256,7 @@ function chartColors(isDark: boolean) {
     axisLine: isDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.56)",
     tooltipBg: isDark ? "rgba(24, 24, 27, 0.95)" : "rgba(255,255,255,0.9)",
     tooltipBorder: isDark ? "#3F3F46" : "#E4E4E7",
-    tooltipText: isDark ? "#F4F4F5" : "#18181B",
+    tooltipText: isDark ? "#F4F4F5" : "#18181B"
   };
 }
 
@@ -266,7 +266,7 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
   const c = chartColors(theme.isDark);
   const option = {
     legend: {
-      data: [t('chart.views'), t('chart.visitors')],
+      data: [t("chart.views"), t("chart.visitors")],
       top: 0,
       left: "center",
       textStyle: { color: c.axisLabel, fontSize: 12 },
@@ -294,7 +294,7 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
     },
     series: [
       {
-        name: t('chart.views'),
+        name: t("chart.views"),
         data: viewsList,
         type: "line",
         smooth: true,
@@ -308,13 +308,17 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
               { offset: 0, color: c.areaTop },
               { offset: 1, color: c.areaBottom }
             ],
-            x: 0, y: 0, x2: 0, y2: 1,
-            type: "linear", global: false
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            type: "linear",
+            global: false
           }
         }
       },
       {
-        name: t('chart.visitors'),
+        name: t("chart.visitors"),
         data: visitorsList,
         type: "line",
         smooth: true,
@@ -328,8 +332,12 @@ const renderEcharts = (dateList: Array<any>, viewsList: Array<any>, visitorsList
               { offset: 0, color: c.visitorAreaTop },
               { offset: 1, color: c.visitorAreaBottom }
             ],
-            x: 0, y: 0, x2: 0, y2: 1,
-            type: "linear", global: false
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            type: "linear",
+            global: false
           }
         }
       }
@@ -368,7 +376,7 @@ const getDatas = async () => {
           return;
         }
         if (type === "echarts") {
-          const dates = data.data.views.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? t('time.hour') : t('time.day')}`);
+          const dates = data.data.views.map((i: any) => `${i.name}${["today", "1d"].includes(props.timeValue) ? t("time.hour") : t("time.day")}`);
           const views = data.data.views.map((i: any) => i.value);
           const visitors = data.data.visitors.map((i: any) => i.value);
           renderEcharts(dates, views, visitors);
@@ -399,11 +407,14 @@ watch(
 );
 
 // Re-render chart on dark mode toggle
-watch(() => theme.isDark, () => {
-  if (lastChartData.value.dates.length) {
-    renderEcharts(lastChartData.value.dates, lastChartData.value.views, lastChartData.value.visitors);
+watch(
+  () => theme.isDark,
+  () => {
+    if (lastChartData.value.dates.length) {
+      renderEcharts(lastChartData.value.dates, lastChartData.value.views, lastChartData.value.visitors);
+    }
   }
-});
+);
 
 onMounted(() => {
   // Initialize ECharts
