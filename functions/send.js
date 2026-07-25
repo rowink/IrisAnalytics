@@ -4,9 +4,14 @@ export async function onRequest({ request, env }) {
     const { host, path, referrer, website, visitor, visit } = await request.json();
     // 校验统计白名单
     if (env.CLOUDFLARE_WEBSITE_WHITELIST) {
-      const websiteArr = env.CLOUDFLARE_WEBSITE_WHITELIST.split("|");
-      const currentWebsite = websiteArr.find((i) => i.includes(website) && i.includes(host));
-      if (!currentWebsite) return Response.json({ success: false, message: "当前网站不在白名单内" }, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
+      const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split("\n");
+      const isAllowed = lines.some((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return false;
+        const [siteId, domain] = trimmed.split("|").map((s) => s.trim());
+        return siteId === website && domain === host;
+      });
+      if (!isAllowed) return Response.json({ success: false, message: "当前网站不在白名单内" }, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
     }
     // UA
     const userAgent = request.headers.get("user-agent") || undefined;
