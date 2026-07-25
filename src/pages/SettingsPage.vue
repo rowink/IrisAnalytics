@@ -2,7 +2,7 @@
 import { ref, computed, inject } from "vue";
 import type { Ref } from "vue";
 import { useRouter } from "vue-router";
-import { Settings, Palette, Info, Code, ChevronLeft, X } from "lucide-vue-next";
+import { Settings, Palette, Info, Code, ChevronLeft, X, Copy, Check } from "lucide-vue-next";
 import { useMediaQuery, useClipboard } from "@vueuse/core";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSettingsStore } from "@/stores/settings";
@@ -192,8 +192,9 @@ function switchLocale(locale: Locale) {
             <div v-if="scriptTag" class="code-preview-row">
               <div class="code-preview-header">
                 <span class="code-preview-label">{{ t("settings.trackingCode") }}</span>
-                <button class="copy-btn" :class="{ copied }" @click="copy(scriptTag)">
-                  {{ copied ? t("settings.copied") : t("settings.copyCode") }}
+                <button class="copy-btn" :class="{ copied }" @click="copy(scriptTag)" :title="copied ? t('settings.copied') : t('settings.copyCode')">
+                  <Copy v-if="!copied" class="w-4 h-4" />
+                  <Check v-else class="w-4 h-4" />
                 </button>
               </div>
               <pre class="code-block"><code>{{ scriptTag }}</code></pre>
@@ -532,12 +533,13 @@ function switchLocale(locale: Locale) {
 .copy-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  font-size: 12px;
-  border: 1px solid #e4e4e7;
-  border-radius: 5px;
-  background: #fff;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
   color: #52525b;
   cursor: pointer;
   transition: all 0.15s;
@@ -545,32 +547,25 @@ function switchLocale(locale: Locale) {
 
 .copy-btn:hover {
   background: #f4f4f5;
-  border-color: #d4d4d8;
   color: #18181b;
 }
 
 .copy-btn.copied {
-  background: #dcfce7;
-  border-color: #86efac;
-  color: #166534;
+  color: #8b99f8;
 }
 
 :root.dark .copy-btn {
-  background: #09090b;
-  border-color: #27272a;
+  background: transparent;
   color: #a1a1aa;
 }
 
 :root.dark .copy-btn:hover {
   background: #18181b;
-  border-color: #3f3f46;
   color: #f4f4f5;
 }
 
 :root.dark .copy-btn.copied {
-  background: rgba(22, 163, 74, 0.15);
-  border-color: #166534;
-  color: #4ade80;
+  color: #8b99f8;
 }
 
 .code-block {
