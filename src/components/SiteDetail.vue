@@ -26,7 +26,7 @@
         </div>
       </div>
 
-      <div class="w-full flex items-center justify-between gap-4">
+      <div class="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 class="detail-title">{{ siteId }}</h2>
         </div>

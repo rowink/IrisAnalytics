@@ -1,7 +1,7 @@
 <template>
   <section class="app" :class="{ 'app--fullscreen': route.name === 'login' || route.name === 'settings' }">
-    <!-- Fixed Header — hidden in settings and login -->
-    <header v-if="route.name !== 'settings' && route.name !== 'login'">
+    <!-- Fixed Header — hidden in login, hidden on desktop for settings (has own nav) -->
+    <header v-if="route.name !== 'login'" :class="{ 'header--settings': route.name === 'settings' }">
       <div class="main">
         <div class="logo" @click="switchToOverview" :title="t('header.backToOverview')">
           <img class="header-logo" src="/image/moe.png" />
@@ -367,6 +367,13 @@ onMounted(async () => {
   color: #f4f4f5;
 }
 
+/* ── Header: hide on desktop for settings page (has own nav) ── */
+@media (min-width: 769px) {
+  header.header--settings {
+    display: none;
+  }
+}
+
 /* ── Responsive: mobile ≤ 768px ── */
 @media (max-width: 768px) {
   .mobile-menu-btn {
@@ -381,6 +388,14 @@ onMounted(async () => {
   .app-main.sidebar-closed {
     margin-left: 0 !important;
   }
+
+  .header-logo {
+    height: 30px !important;
+  }
+
+  .logo {
+    font-size: 20px !important;
+  }
 }
 </style>
 
@@ -389,5 +404,12 @@ onMounted(async () => {
 .fixed.inset-0.z-50,
 .fixed.grid.w-full.max-w-lg.shadow-lg.duration-200 {
   z-index: 99999999;
+}
+
+/* Mobile: push settings content below fixed header */
+@media (max-width: 768px) {
+  .app--fullscreen > .settings-full-page {
+    margin-top: 56px;
+  }
 }
 </style>
