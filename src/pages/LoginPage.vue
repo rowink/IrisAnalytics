@@ -1,5 +1,38 @@
 <template>
   <div class="login-page">
+    <!-- Top-right actions -->
+    <div class="top-actions">
+      <button class="top-btn" @click="theme.toggle()" :title="theme.isDark ? t('header.toggleLight') : t('header.toggleDark')">
+        <Sun v-if="!theme.isDark" class="w-5 h-5" />
+        <Moon v-else class="w-5 h-5" />
+      </button>
+      <div class="lang-wrapper" ref="langRef">
+        <button class="top-btn" @click="langOpen = !langOpen" :title="t('settings.language')">
+          <Languages class="w-5 h-5" />
+        </button>
+        <Transition name="fade">
+          <div v-if="langOpen" class="lang-dropdown">
+            <button
+              class="lang-option"
+              :class="{ active: settings.locale === 'zh-CN' }"
+              @click="switchLocale('zh-CN')"
+            >
+              <span>中文</span>
+              <span v-if="settings.locale === 'zh-CN'" class="lang-check">✓</span>
+            </button>
+            <button
+              class="lang-option"
+              :class="{ active: settings.locale === 'en' }"
+              @click="switchLocale('en')"
+            >
+              <span>English</span>
+              <span v-if="settings.locale === 'en'" class="lang-check">✓</span>
+            </button>
+          </div>
+        </Transition>
+      </div>
+    </div>
+
     <div class="login-card">
       <div class="login-header">
         <img class="login-logo" src="/image/welcome.png" alt="Iris" />
@@ -32,18 +65,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { Loader2 } from "lucide-vue-next";
+import { Loader2, Languages, Sun, Moon } from "lucide-vue-next";
+import { useSettingsStore } from "@/stores/settings";
+import { useThemeStore } from "@/stores/theme";
+import type { Locale } from "@/i18n/locales";
 
 const router = useRouter();
 const { t } = useI18n();
+const settings = useSettingsStore();
+const theme = useThemeStore();
 
 const password = ref("");
 const loading = ref(false);
 const errorMsg = ref("");
 const passwordInput = ref<HTMLInputElement | null>(null);
+const langOpen = ref(false);
+const langRef = ref<HTMLElement | null>(null);
+
+function switchLocale(locale: Locale) {
+  settings.setLocale(locale);
+  langOpen.value = false;
+}
+
+function onClickOutside(e: MouseEvent) {
+  if (langRef.value && !langRef.value.contains(e.target as Node)) {
+    langOpen.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", onClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", onClickOutside);
+});
 
 onMounted(async () => {
   // Check if already authenticated
@@ -237,5 +296,121 @@ const handleLogin = async () => {
 
 :root.dark .login-button:hover:not(:disabled) {
   background: #e4e4e7;
+}
+
+/* ── Top-right actions ── */
+.top-actions {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.top-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #52525b;
+  transition: all 0.15s;
+}
+
+.top-btn:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+:root.dark .top-btn {
+  color: #a1a1aa;
+}
+
+:root.dark .top-btn:hover {
+  background: #27272a;
+  color: #f4f4f5;
+}
+
+.lang-wrapper {
+  position: relative;
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 130px;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+:root.dark .lang-dropdown {
+  background: #18181b;
+  border-color: #27272a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #52525b;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s;
+}
+
+.lang-option:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.lang-option.active {
+  color: #18181b;
+  font-weight: 500;
+}
+
+:root.dark .lang-option {
+  color: #a1a1aa;
+}
+
+:root.dark .lang-option:hover {
+  background: #27272a;
+  color: #f4f4f5;
+}
+
+:root.dark .lang-option.active {
+  color: #f4f4f5;
+}
+
+.lang-check {
+  font-size: 13px;
+  color: #4f6ef7;
+}
+
+/* ── Dropdown transition ── */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 </style>
