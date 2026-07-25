@@ -41,7 +41,7 @@ CLOUDFLARE_WEBSITE_PWD =
 CLOUDFLARE_WEBSITE_WHITELIST =
 ```
 
-### 绑定
+### 绑定分析引擎
 ```shell
 # 变量名
 AnalyticsBinding
@@ -49,7 +49,7 @@ AnalyticsBinding
 AnalyticsDataset
 ```
 
-### 集成使用
+### 追踪脚本
 
 ```js
 // 在网站底部插入以下代码即可集成网站分析仪表板

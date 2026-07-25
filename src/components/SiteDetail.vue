@@ -395,12 +395,10 @@ const getDatas = async () => {
   getDatasStatus.value = true;
   vh.showLoading();
 
-  const session = localStorage.getItem("session") || "";
-
   try {
     const promisesForEach = pmsARR.map(async (type) => {
       try {
-        const pms = { type, siteID: props.siteId, time: props.timeValue, session };
+        const pms = { type, siteID: props.siteId, time: props.timeValue };
         const res = await fetch("/api", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -408,7 +406,6 @@ const getDatas = async () => {
         });
         const data = await res.json();
         if (data.code && data.code === 401) {
-          localStorage.clear();
           window.location.reload();
           return;
         }

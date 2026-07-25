@@ -64,7 +64,6 @@ import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { useStorage } from "@vueuse/core";
 import vh from "vh-plugin";
 
 import { useThemeStore } from "@/stores/theme";
@@ -80,7 +79,6 @@ const route = useRoute();
 const { toast } = useToast();
 
 // ── Auth ──
-const session = useStorage("session", "");
 const authStatus = ref(false);
 const loginStatus = ref(false);
 const loginPassword = ref("");
@@ -97,7 +95,6 @@ const loginFn = async () => {
     await new Promise((resolve) => setTimeout(resolve, 666));
     const data = await res.json();
     if (!data.success) return toast({ description: data.message, variant: "destructive" });
-    session.value = loginPassword.value;
     authStatus.value = false;
     initializeApp();
   } finally {
@@ -133,11 +130,10 @@ const fetchSiteList = async () => {
     const res = await fetch("/api", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "list", session: session.value })
+      body: JSON.stringify({ type: "list" })
     });
     const data = await res.json();
     if (data.code && data.code === 401) {
-      session.value = "";
       authStatus.value = true;
       return [];
     }
@@ -199,12 +195,12 @@ const fetchOverviewData = async () => {
             fetch("/api", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ type: "visit", siteID: site.id, time: timeValue.value, session: session.value })
+              body: JSON.stringify({ type: "visit", siteID: site.id, time: timeValue.value })
             }),
             fetch("/api", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ type: "echarts", siteID: site.id, time: timeValue.value, session: session.value })
+              body: JSON.stringify({ type: "echarts", siteID: site.id, time: timeValue.value })
             })
           ]);
 
