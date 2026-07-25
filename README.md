@@ -10,7 +10,7 @@ Iris Analytics
 
 ### 页面截图
 
-![登录页](/docs/login.png)
+<!-- ![登录页](/docs/login.png) -->
 
 ### 部署
 
