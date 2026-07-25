@@ -39,8 +39,6 @@
   <div class="z-[999999999]">
     <Toaster />
   </div>
-
-
 </template>
 
 <script setup lang="ts">

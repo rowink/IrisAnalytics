@@ -12,19 +12,11 @@
         </button>
         <Transition name="fade">
           <div v-if="langOpen" class="lang-dropdown">
-            <button
-              class="lang-option"
-              :class="{ active: settings.locale === 'zh-CN' }"
-              @click="switchLocale('zh-CN')"
-            >
+            <button class="lang-option" :class="{ active: settings.locale === 'zh-CN' }" @click="switchLocale('zh-CN')">
               <span>中文</span>
               <span v-if="settings.locale === 'zh-CN'" class="lang-check">✓</span>
             </button>
-            <button
-              class="lang-option"
-              :class="{ active: settings.locale === 'en' }"
-              @click="switchLocale('en')"
-            >
+            <button class="lang-option" :class="{ active: settings.locale === 'en' }" @click="switchLocale('en')">
               <span>English</span>
               <span v-if="settings.locale === 'en'" class="lang-check">✓</span>
             </button>
@@ -42,15 +34,7 @@
 
       <form class="login-form" @submit.prevent="handleLogin">
         <div class="input-wrapper">
-          <input
-            ref="passwordInput"
-            v-model="password"
-            type="password"
-            :placeholder="t('login.placeholder')"
-            class="login-input"
-            :disabled="loading"
-            autocomplete="current-password"
-          />
+          <input ref="passwordInput" v-model="password" type="password" :placeholder="t('login.placeholder')" class="login-input" :disabled="loading" autocomplete="current-password" />
         </div>
 
         <p v-if="errorMsg" class="error-text">{{ errorMsg }}</p>
@@ -405,7 +389,9 @@ const handleLogin = async () => {
 /* ── Dropdown transition ── */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
 }
 
 .fade-enter-from,

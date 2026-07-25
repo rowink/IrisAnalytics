@@ -181,12 +181,7 @@ function switchLocale(locale: Locale) {
                 <span class="setting-desc">{{ t("settings.websiteIdPlaceholder") }}</span>
               </div>
               <div class="setting-control">
-                <input
-                  v-model="websiteId"
-                  type="text"
-                  :placeholder="t('settings.websiteIdPlaceholder')"
-                  class="tools-input"
-                />
+                <input v-model="websiteId" type="text" :placeholder="t('settings.websiteIdPlaceholder')" class="tools-input" />
               </div>
             </div>
             <div v-if="scriptTag" class="code-preview-row">

@@ -121,7 +121,8 @@ const timeList = computed(() => [
 </template>
 
 <style scoped>
-.overview-container { }
+.overview-container {
+}
 
 .overview-header {
   display: flex;
