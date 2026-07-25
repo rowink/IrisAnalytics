@@ -1,10 +1,10 @@
 <template>
-  <section class="app">
-    <!-- Fixed Header -->
-    <header>
+  <section class="app" :class="{ 'app--fullscreen': route.name === 'login' || route.name === 'settings' }">
+    <!-- Fixed Header — hidden in settings and login -->
+    <header v-if="route.name !== 'settings' && route.name !== 'login'">
       <div class="main">
         <div class="logo" @click="switchToOverview" :title="t('header.backToOverview')">
-          <img class="header-logo" src="./assets/moe.png" />
+          <img class="header-logo" src="/image/moe.png" />
           <p>Iris</p>
         </div>
         <div class="header-actions">
@@ -22,8 +22,8 @@
       </div>
     </header>
 
-    <!-- App Layout (Sidebar + Main) — hidden in settings -->
-    <template v-if="route.name !== 'settings'">
+    <!-- App Layout (Sidebar + Main) — hidden in settings and login -->
+    <template v-if="route.name !== 'settings' && route.name !== 'login'">
       <Sidebar :collapsed="sidebarCollapsed" :siteList="siteList" :activeSite="activeSite" :activeView="activeView" :mobileOpen="mobileMenuOpen" @toggle-collapse="sidebarCollapsed = !sidebarCollapsed" @select-overview="switchToOverview" @select-site="switchToDetail" @close-mobile="mobileMenuOpen = false" />
 
       <main :class="['app-main', { 'sidebar-closed': sidebarCollapsed }]">
@@ -31,7 +31,7 @@
       </main>
     </template>
 
-    <!-- Settings — full page, no sidebar -->
+    <!-- Settings / Login — full page, no sidebar -->
     <router-view v-else />
   </section>
 
@@ -40,30 +40,15 @@
     <Toaster />
   </div>
 
-  <!-- Login Dialog -->
-  <AlertDialog :open="authStatus">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>{{ t("login.title") }}</AlertDialogTitle>
-        <AlertDialogDescription />
-      </AlertDialogHeader>
-      <Input type="text" placeholder="Password" v-model="loginPassword" />
-      <AlertDialogFooter>
-        <Button :disabled="loginStatus" @click="loginFn"> <Loader2 v-show="loginStatus" class="w-4 h-4 mr-2 animate-spin" />{{ t("login.button") }} </Button>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, provide } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { Loader2, Menu, Sun, Moon, Settings } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Menu, Sun, Moon, Settings } from "lucide-vue-next";
 import { Toaster } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import vh from "vh-plugin";
 
 import { useThemeStore } from "@/stores/theme";
@@ -77,30 +62,6 @@ const router = useRouter();
 const route = useRoute();
 
 const { toast } = useToast();
-
-// ── Auth ──
-const authStatus = ref(false);
-const loginStatus = ref(false);
-const loginPassword = ref("");
-
-const loginFn = async () => {
-  if (!loginPassword.value) return toast({ description: t("login.enterPassword"), variant: "destructive" });
-  loginStatus.value = true;
-  try {
-    const res = await fetch("/api", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "Login", session: loginPassword.value })
-    });
-    await new Promise((resolve) => setTimeout(resolve, 666));
-    const data = await res.json();
-    if (!data.success) return toast({ description: data.message, variant: "destructive" });
-    authStatus.value = false;
-    initializeApp();
-  } finally {
-    loginStatus.value = false;
-  }
-};
 
 // ── View State (route-derived) ──
 const activeView = computed(() => route.name as "overview" | "detail" | "settings");
@@ -134,7 +95,7 @@ const fetchSiteList = async () => {
     });
     const data = await res.json();
     if (data.code && data.code === 401) {
-      authStatus.value = true;
+      router.push("/login");
       return [];
     }
     if (!data.success) {
@@ -260,12 +221,16 @@ watch(timeValue, () => {
   }
 });
 
-// ── Watch route changes → re-fetch overview on navigation ──
+// ── Watch route changes → re-fetch on navigation or after login redirect ──
 watch(
   () => route.name,
-  (name) => {
+  async (name) => {
     if (name === "overview" && siteList.value.length > 0) {
-      fetchOverviewData();
+      await fetchOverviewData();
+    }
+    // If navigating to a protected page without data, re-initialize
+    if (name && name !== "login" && siteList.value.length === 0) {
+      await initializeApp();
     }
   }
 );
@@ -333,6 +298,8 @@ onMounted(async () => {
 .header-logo {
   user-select: none;
   point-event: none;
+  user-drag: none;
+  -webkit-user-drag: none;
 }
 
 .theme-toggle,

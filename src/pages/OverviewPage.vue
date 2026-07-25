@@ -188,6 +188,8 @@ const timeList = computed(() => [
   margin: auto;
   user-select: none;
   point-event: none;
+  user-drag: none;
+  -webkit-user-drag: none;
 }
 
 .empty-state-title {

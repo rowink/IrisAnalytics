@@ -209,7 +209,7 @@ function switchLocale(locale: Locale) {
           <div class="setting-card about-card">
             <div class="about-info">
               <div class="about-logo">
-                <img src="@/assets/moe.png" alt="Iris Analytics" />
+                <img src="/image/moe.png" alt="Iris Analytics" />
                 <span>Iris Analytics</span>
               </div>
               <p class="about-version">v1.0.0</p>
@@ -446,8 +446,11 @@ function switchLocale(locale: Locale) {
 }
 
 .about-logo img {
-  height: 120px;
-  border-radius: 12px;
+  height: 200px;
+  point-event: none;
+  user-select: none;
+  user-drag: none;
+  -webkit-user-drag: none;
 }
 
 .about-version {
