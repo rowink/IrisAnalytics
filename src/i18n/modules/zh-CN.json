@@ -63,6 +63,13 @@
   "settings.aboutDesc": "应用信息与版本",
   "settings.aboutTagline": "网站数据统计分析平台",
   "settings.system": "跟随系统",
+  "settings.tools": "集成工具",
+  "settings.toolsDesc": "生成分析追踪代码，复制并粘贴到你的网站中",
+  "settings.websiteId": "网站标识",
+  "settings.websiteIdPlaceholder": "输入自定义网站唯一标识",
+  "settings.trackingCode": "追踪代码",
+  "settings.copyCode": "复制代码",
+  "settings.copied": "已复制",
 
   "common.loading": "加载中...",
   "common.save": "保存",

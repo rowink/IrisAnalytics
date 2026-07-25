@@ -2,8 +2,8 @@
 import { ref, computed, inject } from "vue";
 import type { Ref } from "vue";
 import { useRouter } from "vue-router";
-import { Settings, Palette, Info, ChevronLeft, X } from "lucide-vue-next";
-import { useMediaQuery } from "@vueuse/core";
+import { Settings, Palette, Info, Code, ChevronLeft, X } from "lucide-vue-next";
+import { useMediaQuery, useClipboard } from "@vueuse/core";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
@@ -19,6 +19,16 @@ const activeTab = ref("general");
 const isMobile = useMediaQuery("(max-width: 768px)");
 const mobileMenuOpen = inject<Ref<boolean>>("mobileMenuOpen")!;
 
+// Tools: script generator
+const websiteId = ref("");
+const scriptTag = computed(() => {
+  const host = location.host;
+  const id = websiteId.value.trim();
+  if (!id) return null;
+  return `<script defer src="https://${host}/tracker.min.js" data-website-id="${id}"><` + `/script>`;
+});
+const { copy, copied } = useClipboard();
+
 const selectTab = (key: string) => {
   activeTab.value = key;
   if (isMobile.value) mobileMenuOpen.value = false;
@@ -28,6 +38,7 @@ const goBack = () => router.push("/");
 
 const tabs = computed(() => [
   { key: "general", label: t("settings.general"), icon: Settings },
+  { key: "tools", label: t("settings.tools"), icon: Code },
   { key: "appearance", label: t("settings.theme"), icon: Palette },
   { key: "about", label: t("settings.about"), icon: Info }
 ]);
@@ -155,6 +166,37 @@ function switchLocale(locale: Locale) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tools: Script Generator -->
+        <section v-if="activeTab === 'tools'" class="settings-section">
+          <h3 class="section-title">{{ t("settings.tools") }}</h3>
+          <p class="section-desc">{{ t("settings.toolsDesc") }}</p>
+          <div class="setting-card">
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.websiteId") }}</span>
+                <span class="setting-desc">{{ t("settings.websiteIdPlaceholder") }}</span>
+              </div>
+              <div class="setting-control">
+                <input
+                  v-model="websiteId"
+                  type="text"
+                  :placeholder="t('settings.websiteIdPlaceholder')"
+                  class="tools-input"
+                />
+              </div>
+            </div>
+            <div v-if="scriptTag" class="code-preview-row">
+              <div class="code-preview-header">
+                <span class="code-preview-label">{{ t("settings.trackingCode") }}</span>
+                <button class="copy-btn" :class="{ copied }" @click="copy(scriptTag)">
+                  {{ copied ? t("settings.copied") : t("settings.copyCode") }}
+                </button>
+              </div>
+              <pre class="code-block"><code>{{ scriptTag }}</code></pre>
             </div>
           </div>
         </section>
@@ -421,6 +463,138 @@ function switchLocale(locale: Locale) {
 
 :root.dark .about-desc {
   color: #a1a1aa;
+}
+
+/* ── Tools: Input ── */
+.tools-input {
+  width: 130px;
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  background: #fff;
+  color: #18181b;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.tools-input::placeholder {
+  color: #a1a1aa;
+}
+
+.tools-input:focus {
+  border-color: #e4e4e7;
+}
+
+:root.dark .tools-input {
+  background: #09090b;
+  border-color: #27272a;
+  color: #f4f4f5;
+}
+
+:root.dark .tools-input:focus {
+  border-color: #27272a;
+}
+
+@media (min-width: 640px) {
+  .tools-input {
+    width: 180px;
+  }
+}
+
+/* ── Tools: Code preview ── */
+.code-preview-row {
+  border-top: 1px solid #f0f0f0;
+}
+
+:root.dark .code-preview-row {
+  border-top-color: #27272a;
+}
+
+.code-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 8px;
+}
+
+.code-preview-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #52525b;
+}
+
+:root.dark .code-preview-label {
+  color: #a1a1aa;
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid #e4e4e7;
+  border-radius: 5px;
+  background: #fff;
+  color: #52525b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+  color: #18181b;
+}
+
+.copy-btn.copied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+:root.dark .copy-btn {
+  background: #09090b;
+  border-color: #27272a;
+  color: #a1a1aa;
+}
+
+:root.dark .copy-btn:hover {
+  background: #18181b;
+  border-color: #3f3f46;
+  color: #f4f4f5;
+}
+
+:root.dark .copy-btn.copied {
+  background: rgba(22, 163, 74, 0.15);
+  border-color: #166534;
+  color: #4ade80;
+}
+
+.code-block {
+  margin: 0 20px 16px;
+  padding: 12px 16px;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  white-space: pre;
+  tab-size: 2;
+}
+
+:root.dark .code-block {
+  background: #18181b;
+  border-color: #27272a;
+  color: #e4e4e7;
+}
+
+.code-block code {
+  word-break: keep-all;
 }
 
 /* ── Mobile drawer ── */
