@@ -28,7 +28,12 @@
 
       <div class="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 class="detail-title">{{ siteId }}</h2>
+          <h2 class="detail-title">
+            {{ siteId }}
+            <a v-if="host" :href="`https://${host}`" target="_blank" rel="noopener noreferrer" class="detail-link" @click.stop>
+              <ExternalLink class="w-4 h-4" />
+            </a>
+          </h2>
         </div>
 
         <div class="flex items-center gap-4">
@@ -194,7 +199,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
 import * as echarts from "echarts";
-import { Clock } from "lucide-vue-next";
+import { Clock, ExternalLink } from "lucide-vue-next";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -211,6 +216,7 @@ const { t } = useI18n();
 const props = defineProps<{
   siteId: string;
   timeValue: string;
+  host?: string;
 }>();
 
 defineEmits<{
@@ -505,14 +511,33 @@ onBeforeUnmount(() => {
 }
 
 .detail-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 22px;
   font-weight: 700;
   color: #18181b;
   margin: 0;
 }
 
+.detail-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a1aa;
+  transition: color 0.15s;
+}
+
+.detail-link:hover {
+  color: #4f6ef7;
+}
+
 :root.dark .detail-title {
   color: #f4f4f5;
+}
+
+:root.dark .detail-link:hover {
+  color: #8b9cf7;
 }
 
 .stats-item span {

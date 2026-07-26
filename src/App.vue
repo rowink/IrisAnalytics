@@ -211,6 +211,7 @@ provide("overviewSites", overviewSites);
 provide("overviewLoading", overviewLoading);
 provide("initialized", initialized);
 provide("mobileMenuOpen", mobileMenuOpen);
+provide("siteList", siteList);
 
 // ── Watch timeValue changes → re-fetch overview ──
 watch(timeValue, () => {
