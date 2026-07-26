@@ -175,7 +175,7 @@
       </Card>
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t("detail.areas") }}</CardTitle>
+          <CardTitle>{{ t("detail.countries") }}</CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.area != undefined">
