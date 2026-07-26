@@ -39,7 +39,7 @@ No database required — fully powered by the Cloudflare ecosystem:
 3. In your Pages project **Settings > Bindings**, add an **Analytics Engine** binding with variable name `AnalyticsBinding` and dataset `AnalyticsDataset`, then redeploy
 4. Visit `https://your-project.pages.dev` to access the analytics dashboard
 5. Go to **Settings > Integration** to get the tracking script and add it to your site
-6. Return to the dashboard and wait for visit data to populate
+6. Return to the dashboard and wait for visit data.
 
 ### Environment Variables
 
@@ -91,7 +91,7 @@ CLOUDFLARE_WEBSITE_PWD = your_password
 
 ## Gratitude
 
-- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics) — the original project this is based on
+- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics)
 
 ## License
 

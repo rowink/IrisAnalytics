@@ -90,7 +90,7 @@ CLOUDFLARE_WEBSITE_PWD = your_password
 
 ## 致谢
 
-- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics) — 本项目的原始基础
+- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics)
 
 ## 许可证
 
