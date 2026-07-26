@@ -114,8 +114,8 @@
       </Card>
     </div>
 
-    <!-- Browsers, OS, Areas -->
-    <div class="grid xl:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
+    <!-- Browsers & OS -->
+    <div class="grid md:grid-cols-2 grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
           <CardTitle>{{ t("detail.browsers") }}</CardTitle>
@@ -166,7 +166,13 @@
           </div>
         </CardContent>
       </Card>
+    </div>
 
+    <!-- World Map & Areas -->
+    <div class="grid md:grid-cols-3 grid-cols-1">
+      <Card class="box-border flex flex-col md:col-span-2 col-span-1 w-full h-[460px] overflow-hidden" v-if="resData.area != undefined">
+        <WorldMap :areaData="resData.area" />
+      </Card>
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
           <CardTitle>{{ t("detail.areas") }}</CardTitle>
@@ -192,11 +198,6 @@
           </div>
         </CardContent>
       </Card>
-    </div>
-
-    <!-- World Map -->
-    <div v-if="resData.area != undefined">
-      <WorldMap :areaData="resData.area" />
     </div>
   </section>
 </template>

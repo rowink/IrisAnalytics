@@ -123,19 +123,16 @@ const chartOption = computed(() => {
 <style scoped>
 .world-map-wrapper {
   width: 100%;
-  border: 1px solid #e4e4e7;
-  border-radius: calc(var(--radius) - 2px);
-
+  height: 100%;
+  box-sizing: border-box;
   background: hsl(var(--card));
-}
-
-:root.dark .world-map-wrapper {
-  border-color: #27272a;
+  display: flex;
+  flex-direction: column;
 }
 
 .world-map-chart {
   width: 100%;
-  aspect-ratio: 2 / 1;
-  min-height: 300px;
+  flex: 1;
+  min-height: 0;
 }
 </style>
