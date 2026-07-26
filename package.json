@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@radix-icons/vue": "^1.0.0",
+    "@surbowl/world-geo-json-zh": "^2.1.5",
     "@vueuse/core": "^14.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -28,6 +29,7 @@
     "ua-parser-js": "^2.0.10",
     "vh-plugin": "^1.2.2",
     "vue": "^3.5.40",
+    "vue-echarts": "^8.0.1",
     "vue-i18n": "^11.4.7",
     "vue-router": "^5.2.0"
   },

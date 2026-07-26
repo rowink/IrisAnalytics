@@ -193,6 +193,11 @@
         </CardContent>
       </Card>
     </div>
+
+    <!-- World Map -->
+    <div v-if="resData.area != undefined">
+      <WorldMap :areaData="resData.area" />
+    </div>
   </section>
 </template>
 
@@ -202,6 +207,7 @@ import * as echarts from "echarts";
 import { Clock, ExternalLink } from "lucide-vue-next";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
+import WorldMap from "@/components/WorldMap.vue";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -581,7 +587,6 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   padding-left: 4px;
   flex-shrink: 0;
-  width: 30px;
   height: calc(100% - 6px);
   border-left: 1px solid #d2defb;
   font-style: normal;
