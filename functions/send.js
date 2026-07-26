@@ -16,7 +16,7 @@ export async function onRequest({ request, env }) {
     // UA
     const userAgent = request.headers.get("user-agent") || undefined;
     const parsedUserAgent = new UAParser(userAgent);
-    const { browser, os } = parsedUserAgent.getResult();
+    const { browser, os, device } = parsedUserAgent.getResult();
     // Area
     const area = request.cf ? String(request.cf.country).trim() || "Unknown" : "Unknown";
     // Referrer
@@ -26,6 +26,15 @@ export async function onRequest({ request, env }) {
     } catch (error) {
       referrerUrl = referrer;
     }
+    const deviceType = (() => {
+      const type = device.type;
+      if (type === "mobile") return "Mobile";
+      if (type === "tablet") return "Tablet";
+      if (type === "smarttv") return "Smart TV";
+      if (type === "wearable") return "Wearable";
+      return "Desktop";
+    })();
+
     // 写数据
     website &&
       host &&
@@ -38,7 +47,10 @@ export async function onRequest({ request, env }) {
           os.name == "android" ? "Android" : os.name || "Unknown", //osName - blob5
           browser.name == "Chrome WebView" ? "Chrome" : browser.name || "Unknown", //browserName - blob6
           area, //areaCode - blob7
-          userAgent //UA - blob8
+          userAgent, //UA - blob8
+          deviceType, //deviceType - blob9
+          device.vendor || "Unknown", //deviceVendor - blob10
+          device.model || "Unknown" //deviceModel - blob11
         ],
         doubles: [visitor ? 1 : 0, visit ? 1 : 0]
       }); // Response

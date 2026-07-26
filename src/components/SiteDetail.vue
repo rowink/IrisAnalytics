@@ -114,8 +114,8 @@
       </Card>
     </div>
 
-    <!-- Browsers & OS -->
-    <div class="grid md:grid-cols-2 grid-cols-1">
+    <!-- Browsers, OS & Devices -->
+    <div class="grid md:grid-cols-3 grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
           <CardTitle>{{ t("detail.browsers") }}</CardTitle>
@@ -149,6 +149,31 @@
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.os != undefined">
             <p class="page-item" v-for="(i, idx) in resData.os" :key="idx">
               <img class="os" :src="getIcon(i.name)" />
+              <span class="line-clamp-1">{{ i.name }}</span>
+              <span class="line-clamp-1">{{ i.value }}</span>
+              <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
+            </p>
+          </ScrollArea>
+          <div class="space-y-4 pt-8 w-full" v-else>
+            <Skeleton class="h-6 w-60" />
+            <Skeleton class="h-6 w-80" />
+            <Skeleton class="h-6 w-100" />
+            <Skeleton class="h-6 w-60" />
+            <Skeleton class="h-6 w-80" />
+            <Skeleton class="h-6 w-100" />
+            <Skeleton class="h-6 w-80" />
+            <Skeleton class="h-6 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
+        <CardHeader>
+          <CardTitle>{{ t("detail.devices") }}</CardTitle>
+        </CardHeader>
+        <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
+          <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.device != undefined">
+            <p class="page-item" v-for="(i, idx) in resData.device" :key="idx">
               <span class="line-clamp-1">{{ i.name }}</span>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
@@ -272,6 +297,7 @@ interface SiteDetailData {
   soft?: ListItem[];
   area?: AreaItem[];
   echarts?: SiteEchartsData;
+  device?: ListItem[];
 }
 
 interface ChartData {
@@ -404,7 +430,7 @@ const getDatas = async () => {
   resData.value = { visit: {} };
   tempResData.value = { visit: {} };
 
-  const pmsARR = ["visit", "path", "referrer", "os", "soft", "area", "echarts"] as const;
+  const pmsARR = ["visit", "path", "referrer", "os", "soft", "area", "echarts", "device"] as const;
   getDatasStatus.value = true;
   vh.showLoading();
 

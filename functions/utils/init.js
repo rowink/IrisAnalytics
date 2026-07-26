@@ -57,7 +57,7 @@ export const vh_INIT = async (env, time, siteID, tz, type = null) => {
 
     default:
       {
-        const keyARR = { path: "blob3", referrer: "blob4", os: "blob5", soft: "blob6", area: "blob7" };
+        const keyARR = { path: "blob3", referrer: "blob4", os: "blob5", soft: "blob6", area: "blob7", device: "blob9" };
         const query = `SELECT ${keyARR[type]} ${SQL_WHERE}`;
         const res = await fetch(defaultUrl, { method: "POST", body: query, headers: defaultHeaders });
         const { data } = await res.json();

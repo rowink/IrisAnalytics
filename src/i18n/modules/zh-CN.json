@@ -34,6 +34,7 @@
   "detail.referrers": "来源",
   "detail.browsers": "浏览器",
   "detail.os": "操作系统",
+  "detail.devices": "设备",
   "detail.countries": "国家",
   "detail.none": "(None)",
 
