@@ -1,95 +1,98 @@
 <p align="center">
-<img  src="docs/moe.png" alt="Logo" width="200px">
+<img src="docs/moe.png" alt="Iris Analytics" width="200px">
 </p>
 
-<h2 align="center">
-Iris Analytics
-</h2>
+<h2 align="center">Iris Analytics</h2>
 
-<p align="center">一个运行在 Cloudflare Pages + Analytics Engine 上的轻量开源网站分析仪表板</p>
+<p align="center">A lightweight, open-source website analytics dashboard powered by Cloudflare Pages + Analytics Engine</p>
 
 <p align="center">
   <a href="https://iris.exi.software/">Demo</a> ·
-  <a href="https://exi.ink/posts/cloudflare-page%E9%83%A8%E7%BD%B2iris-analytics%E7%BD%91%E7%AB%99%E5%88%86%E6%9E%90/">部署教程</a>
+  <a href="#deployment">Deployment</a> ·
+  <a href="https://exi.ink/posts/cloudflare-page%E9%83%A8%E7%BD%B2iris-analytics%E7%BD%91%E7%AB%99%E5%88%86%E6%9E%90/">Deployment Guide</a>
 </p>
 
-## 介绍
+<p align="center">
+  <a href="README.zh-CN.md">简体中文</a>
+</p>
 
-Iris Analytics 是基于 [HanAnalytics](https://github.com/uxiaohan/HanAnalytics) 重构的网站分析工具，提供更清晰直观的数据总览和更好的使用体验。
+## Introduction
 
-无需自建数据库，完全依托 Cloudflare 生态：
-- **Pages** — 托管前端与 API（Pages Functions）
-- **Workers Analytics Engine** — 时序数据库存储分析数据
+Iris Analytics is a website analytics tool rebuilt from [HanAnalytics](https://github.com/uxiaohan/HanAnalytics), offering a clearer and more intuitive data overview with an improved user experience.
 
+No database required — fully powered by the Cloudflare ecosystem:
 
-### 前置准备
+- **Pages** — Hosts the frontend and API (Pages Functions)
+- **Workers Analytics Engine** — Time-series database for storing analytics data
 
-- 登录 [Cloudflare](https://dash.cloudflare.com/)
-- Cloudflare Workers ID（在 Workers 和 Pages 页面获取）
-- 具有账户分析读取权限的 [Cloudflare API Token](https://dash.cloudflare.com/profile/api-tokens)
-- 在 Analytics Engine 中创建数据集，变量名称填写 `AnalyticsBinding`，数据集名称填写 `AnalyticsDataset`
+## Prerequisites
 
+- Log in to [Cloudflare](https://dash.cloudflare.com/)
+- Cloudflare Account ID (available on the Workers & Pages page)
+- [Cloudflare API Token](https://dash.cloudflare.com/profile/api-tokens) with **Account Analytics Read** permission
+- Create a dataset in **Analytics Engine** with binding name `AnalyticsBinding` and dataset name `AnalyticsDataset`
 
-### 部署
+## Deployment
 
-- Fork 此仓库 或 [使用此模板生成新仓库](https://github.com/new?template_name=HanAnalytics&template_owner=uxiaohan)
-- 创建 Cloudflare Pages 项目，选择 Fork 的项目，架构选择 Vue，填入[环境变量](#环境变量)，完成部署。
-- 在项目 Pages 的`设置`中配置`绑定`，添加`Analytics Engine`，变量名称填写`AnalyticsBinding`，数据集填写`AnalyticsDataset`并保存，重新部署。
-- 访问 `https://xxxxxx.pages.dev` 网站分析仪表板。
-- 在 设置 > 集成工具 中获取追踪脚本，添加到站点。
-- 回到总览页面，等待访问数据生成。
+1. Fork this repository or [use it as a template](https://github.com/new?template_name=HanAnalytics&template_owner=uxiaohan)
+2. Create a Cloudflare Pages project, select your forked repo, choose **Vue** framework, fill in the [environment variables](#environment-variables), and deploy
+3. In your Pages project **Settings > Bindings**, add an **Analytics Engine** binding with variable name `AnalyticsBinding` and dataset `AnalyticsDataset`, then redeploy
+4. Visit `https://your-project.pages.dev` to access the analytics dashboard
+5. Go to **Settings > Integration** to get the tracking script and add it to your site
+6. Return to the dashboard and wait for visit data to populate
 
-### 环境变量
+### Environment Variables
 
-| 变量名                         | 说明                                                                                     | 必填 |
-| ------------------------------ | ---------------------------------------------------------------------------------------- | ---- |
-| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Workers ID                                                                    | 是   |
-| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token（账户分析读取权限）                                                 | 是   |
-| `CLOUDFLARE_WEBSITE_PWD`       | 网站访问密码，留空则无需密码                                                             | 否   |
-| `CLOUDFLARE_WEBSITE_WHITELIST` | 可统计的白名单，格式 `WebsiteID \| 域名`，每行一条规则。例如：`website-id \| domain.com` | 否   |
+| Variable                       | Description                                                       | Required |
+| ------------------------------ | ----------------------------------------------------------------- | -------- |
+| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                             | Yes      |
+| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token (Account Analytics Read permission)          | Yes      |
+| `CLOUDFLARE_WEBSITE_PWD`       | Dashboard access password (leave empty for no password)           | No       |
+| `CLOUDFLARE_WEBSITE_WHITELIST` | Analytics whitelist — format: `WebsiteID \| domain`, one per line | No       |
 
-### 绑定分析引擎
+### Analytics Engine Binding
+
 ```shell
-# 变量名
+# Binding name
 AnalyticsBinding
-# 数据集
+# Dataset name
 AnalyticsDataset
 ```
 
-### 追踪脚本
-在网站底部插入以下代码即可集成网站分析：
+### Tracking Script
 
-```js
-<script defer src="https://xxxxxx.pages.dev/tracker.min.js" data-website-id="自定义网站唯一标识"></script>
+Insert the following code at the bottom of your website to integrate analytics:
+
+```html
+<script defer src="https://your-project.pages.dev/tracker.min.js" data-website-id="your-unique-site-id"></script>
 ```
 
-### 网站白名单
+## Whitelist
 
-默认分析 API 公开，任何网站都可以向数据集中写入数据。通过白名单可以双向校验网站唯一 ID 和域名，防止数据被污染。
+By default, the analytics API is public — any site can send data to the dataset. The whitelist provides two-way verification of both the site ID and domain to prevent data pollution.
 
 ```shell
-# 格式：WebsiteID | 域名，每行一条规则
+# Format: WebsiteID | domain, one rule per line
 CLOUDFLARE_WEBSITE_WHITELIST =
 website-id | domain.com
 iris | iris.exi.software
 ```
 
-白名单同时校验网站唯一 ID 和域名，确保只有指定的网站可以上报数据。
+The whitelist validates both the unique site ID and domain, ensuring only authorized websites can report data.
 
+## Authentication
 
-### 登录授权
-
-设置 `CLOUDFLARE_WEBSITE_PWD` 环境变量后，访问分析主页需输入密码。登录授权有效期为 7 天，有效期内访问会自动滚动续期。
+Set the `CLOUDFLARE_WEBSITE_PWD` environment variable to require a password for dashboard access. The login session lasts for 7 days and auto-renews on active visits.
 
 ```shell
-# 设置后访问仪表板需输入密码（默认无需密码）
+# Set a password to protect the dashboard (no password by default)
 CLOUDFLARE_WEBSITE_PWD = your_password
 ```
 
-### 鸣谢
+## Gratitude
 
-- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics)
+- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics) — the original project this is based on
 
-### 许可证
+## License
 
-项目基于 MIT 授权
+The project is licensed under the  [MIT](LICENSE).
