@@ -6,41 +6,42 @@
 Iris Analytics
 </h2>
 
-<p align="center">一个运行在Cloudflare的网络分析跟踪器和仪表板</p>
+<p align="center">一个运行在 Cloudflare Pages + Analytics Engine 上的轻量开源网站分析仪表板</p>
 
-### 页面截图
+<p align="center">
+  <a href="https://iris.exi.software/">Demo</a> ·
+  <a href="https://exi.ink/posts/cloudflare-page%E9%83%A8%E7%BD%B2iris-analytics%E7%BD%91%E7%AB%99%E5%88%86%E6%9E%90/">部署教程</a>
+</p>
 
-<!-- ![登录页](/docs/login.png) -->
+## 介绍
+
+Iris Analytics 是基于 [HanAnalytics](https://github.com/uxiaohan/HanAnalytics) 重构的网站分析工具，提供更清晰直观的数据总览和更好的使用体验。
+
+无需自建数据库，完全依托 Cloudflare 生态：
+- **Pages** — 托管前端与 API（Pages Functions）
+- **Workers Analytics Engine** — 时序数据库存储分析数据
 
 ### 部署
 
-- 登录到 [Cloudflare Login](https://dash.cloudflare.com/sign-up)
-- 点击 Workers 和 Pages 随便创建一个 workers 并开启 分析引擎，然后复制 workers ID 备用。
-- 创建一个 [Cloudflare API token](https://dash.cloudflare.com/profile/api-tokens) 备用。
+- 登录到 [Cloudflare](https://dash.cloudflare.com/)
+- 在 Workers 和 Pages 页面，复制 workers ID 备用。
+- 在 Analytics Engine 中创建数据集，名称填写`AnalyticsBinding`，数据集填写`AnalyticsDataset`
+- 创建一个账户分析读取权限的 [Cloudflare API](https://dash.cloudflare.com/profile/api-tokens) 备用。
 - Fork 此仓库 或 [使用此模板生成新仓库](https://github.com/new?template_name=HanAnalytics&template_owner=uxiaohan)
-- 登录 Cloudflare 并创建 Pages 项目 ，链接Github仓库，选择刚刚 Fork 的项目，架构选择Vue，填入环境变量（环境变量含义如下），部署即可。
-- cloudflare pages 部署完成后，在项目的`设置`中配置`绑定`，添加`Analytics Engine`，变量名称填写`AnalyticsBinding`，数据集填写`AnalyticsDataset`并保存，重新部署！。
-- 重新部署完成后，访问 `https://xxxxxx.pages.dev` 即可访问网站分析仪表板。（注意：首次部署生成的域名可能需要几分钟时间生效，请耐心等待）
-- 部署成功后，首次打开页面没有数据，请尽快集成到自己的网站并出现有效访问后，再次打开页面即可看到数据！
-- 新增 `密码访问` 及 `网站白名单`，开启密码后，输入密码可访问（默认无需密码），网站白名单功能，加白的网站才可计入统计（默认任意网站都可统计）
+- 创建 Cloudflare Pages 项目，选择刚刚 Fork 的项目，架构选择Vue，填入环境变量，完成部署。
+- 在项目 Pages 的`设置`中配置`绑定`，添加`Analytics Engine`，变量名称填写`AnalyticsBinding`，数据集填写`AnalyticsDataset`并保存，重新部署。
+- 重新部署完成后，访问 `https://xxxxxx.pages.dev` 即可访问网站分析仪表板。
+- 在 设置 > 集成工具 中获取追踪脚本，添加到站点。
+- 回到总览页面，等待访问数据生成。
 
-### 环境变量说明
-```shell
-# Cloudflare Workers ID
-CLOUDFLARE_ACCOUNT_ID = 你的 Cloudflare Workers ID
+### 环境变量
 
-# 你的 Cloudflare API token
-CLOUDFLARE_API_TOKEN = 你的 Cloudflare API token
-
-# 网站访问密码 (不设置即无需密码访问)
-CLOUDFLARE_WEBSITE_PWD =
-
-# 可统计的白名单，格式 WebsiteID | 域名，换行分割
-# 例如：
-# website-id | domain.com
-# iris | iris.exi.software
-CLOUDFLARE_WEBSITE_WHITELIST =
-```
+| 变量名 | 说明 | 必填 |
+|---|---|---|
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Workers ID | 是 |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API Token（账户分析读取权限） | 是 |
+| `CLOUDFLARE_WEBSITE_PWD` | 网站访问密码，留空则无需密码 | 否 |
+| `CLOUDFLARE_WEBSITE_WHITELIST` | 可统计的白名单，格式 `WebsiteID \| 域名`，每行一条规则。例如：`website-id \| domain.com` | 否 |
 
 ### 绑定分析引擎
 ```shell
@@ -57,6 +58,35 @@ AnalyticsDataset
 <script defer src="https://xxxxxx.pages.dev/tracker.min.js" data-website-id="自定义网站唯一标识"></script>
 ```
 
-### 数据问题
+### 网站白名单
 
-Cloudflare Analytics Engine 无法访问网站导致的，请确保网站被正常访问，并且保证 Cloudflare Analytics Engine 开启，并已经创建分析数据集。
+默认分析 API 公开，任何网站都可以向数据集中写入数据。通过白名单可以双向校验，防止数据被污染。
+
+```shell
+# 格式：WebsiteID | 域名，每行一条规则
+CLOUDFLARE_WEBSITE_WHITELIST =
+website-id | domain.com
+iris | iris.exi.software
+```
+
+> 白名单同时校验网站唯一 ID 和域名，确保只有指定的网站可以上报数据。
+
+
+### 登录授权
+
+默认无登录密码，增加登录密码后，访问分析主页需要输入登录密码
+
+```shell
+# 设置后访问仪表板需输入密码（默认无需密码）
+CLOUDFLARE_WEBSITE_PWD = your_password
+```
+
+登录授权有效期为 7 天，有效期内访问会自动滚动续期。
+
+### 鸣谢
+
+- [HanAnalytics](https://github.com/uxiaohan/HanAnalytics)
+
+### 许可证
+
+项目基于 MIT 授权
