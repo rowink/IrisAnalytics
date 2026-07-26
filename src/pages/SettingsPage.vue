@@ -2,13 +2,14 @@
 import { ref, computed, inject } from "vue";
 import type { Ref } from "vue";
 import { useRouter } from "vue-router";
-import { Settings, Palette, Info, Code, ChevronLeft, X, Copy, Check } from "lucide-vue-next";
+import { Settings, Palette, Info, Code, ChevronLeft, X, Copy, Check, Github, ExternalLink } from "lucide-vue-next";
 import { useMediaQuery, useClipboard } from "@vueuse/core";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
 import type { Locale } from "@/i18n/locales";
+import { version } from "../../package.json";
 
 const settings = useSettingsStore();
 const theme = useThemeStore();
@@ -207,8 +208,18 @@ function switchLocale(locale: Locale) {
                 <img src="/image/moe.png" alt="Iris Analytics" />
                 <span>Iris Analytics</span>
               </div>
-              <p class="about-version">v1.0.0</p>
+              <p class="about-version">v{{ version }}</p>
               <p class="about-desc">{{ t("settings.aboutTagline") }}</p>
+              <div class="about-links">
+                <a href="https://github.com/rowink/IrisAnalytics" target="_blank" rel="noopener noreferrer" class="about-link">
+                  <Github class="w-4 h-4" />
+                  <span>{{ t("settings.github") }}</span>
+                </a>
+                <a href="https://github.com/rowink/IrisAnalytics/issues" target="_blank" rel="noopener noreferrer" class="about-link">
+                  <ExternalLink class="w-4 h-4" />
+                  <span>{{ t("settings.feedback") }}</span>
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -462,6 +473,41 @@ function switchLocale(locale: Locale) {
 
 :root.dark .about-desc {
   color: #a1a1aa;
+}
+
+.about-links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4f6ef7;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.about-link:hover {
+  background: #eaeffe;
+  color: #3b5bf7;
+}
+
+:root.dark .about-link {
+  color: #8b9cf7;
+}
+
+:root.dark .about-link:hover {
+  background: rgba(79, 110, 247, 0.15);
+  color: #aebbfa;
 }
 
 /* ── Tools: Input ── */

@@ -70,6 +70,8 @@
   "settings.about": "About",
   "settings.aboutDesc": "App info & version",
   "settings.aboutTagline": "Web Analytics Dashboard",
+  "settings.github": "GitHub Repository",
+  "settings.feedback": "Feedback",
 
   "common.loading": "Loading...",
   "common.save": "Save",
