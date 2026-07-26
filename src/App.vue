@@ -67,13 +67,14 @@ const activeSite = computed(() => (route.params.id as string) || "");
 const sidebarCollapsed = ref(true);
 const mobileMenuOpen = ref(false);
 const settings = useSettingsStore();
-const timeValue = ref(settings.defaultTime);
+const validTimes = ["today", "1d", "7d", "30d", "60d", "90d"];
+const timeValue = ref(validTimes.includes(settings.defaultTime) ? settings.defaultTime : "today");
 
 // ── Sync settings.defaultTime → timeValue when default changes
 watch(
   () => settings.defaultTime,
   (newVal) => {
-    timeValue.value = newVal;
+    timeValue.value = validTimes.includes(newVal) ? newVal : "today";
   }
 );
 
