@@ -276,15 +276,15 @@ function switchLocale(locale: Locale) {
   color: #a1a1aa;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 0 12px 12px;
+  padding: 0 12px 12px 0;
 }
 
 .back-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: none;
   background: transparent;
   border-radius: 4px;
