@@ -1,4 +1,3 @@
-import { AREAS } from "./area.js";
 import { formatTime, countData, echartsData } from "./index.js";
 export const vh_INIT = async (env, time, siteID, tz, type = null) => {
   // 查询
@@ -64,8 +63,8 @@ export const vh_INIT = async (env, time, siteID, tz, type = null) => {
         const { data } = await res.json();
         // 处理其他数据
         resJSON = countData(data, keyARR[type], {}).slice(0, 100);
-        // 处理Area
-        if (type == "area") resJSON.forEach((i) => (i.code = AREAS[i.name]));
+        // 处理Area - pass ISO code directly for i18n lookup
+        if (type == "area") resJSON.forEach((i) => (i.code = i.name));
       }
       break;
   }

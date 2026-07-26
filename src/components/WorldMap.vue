@@ -9,15 +9,17 @@ import { computed } from "vue";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import { useThemeStore } from "@/stores/theme";
-import { useSettingsStore } from "@/stores/settings";
+import { useI18n } from "vue-i18n";
 import worldGeoJson from "@surbowl/world-geo-json-zh/world.zh.json";
 
 echarts.registerMap("world", worldGeoJson as any);
 
+const geoNameToCode: Record<string, string> = {};
 const codeToGeoName: Record<string, string> = {};
 for (const feature of (worldGeoJson as any).features) {
   const p = feature.properties;
   if (p.iso_a2 && p.name) {
+    geoNameToCode[p.name] = p.iso_a2;
     codeToGeoName[p.iso_a2] = p.name;
   }
 }
@@ -34,7 +36,7 @@ const props = defineProps<{
 }>();
 
 const theme = useThemeStore();
-const settings = useSettingsStore();
+const { t } = useI18n();
 
 function chartColors(isDark: boolean) {
   return {
@@ -55,10 +57,8 @@ const chartOption = computed(() => {
     .map((item) => ({
       name: codeToGeoName[item.code] || item.code,
       value: Number(item.value) || 0,
-      code: item.code
+      code: item.code,
     }));
-
-  const displayNames = new Intl.DisplayNames([settings.locale], { type: "region" });
 
   return {
     tooltip: {
@@ -67,10 +67,10 @@ const chartOption = computed(() => {
       borderColor: c.tooltipBorder,
       textStyle: { color: c.tooltipText },
       formatter: (params: { name?: string; data?: { code?: string }; value?: number | string }) => {
-        const code = params.data?.code;
-        const name = code ? (displayNames.of(code.toUpperCase()) || code) : (params.name || "");
+        const code = params.data?.code || (params.name ? geoNameToCode[params.name] : undefined);
+        const name = code ? (t(`area.${code}`) || params.name || "") : (params.name || "");
         const val = Number(params.value) || 0;
-        return `${name}: ${val}`;
+        return `${name}${val ? `: ${val}` : ""}`;
       }
     },
     visualMap: {
@@ -90,14 +90,25 @@ const chartOption = computed(() => {
         map: "world",
         roam: true,
         selectedMode: false,
-        label: { show: false },
+        label: {
+          show: false,
+          fontSize: 9,
+          color: c.label
+        },
         itemStyle: {
           areaColor: c.empty,
           borderColor: c.border,
           borderWidth: 0.5
         },
         emphasis: {
-          label: { show: false },
+          label: {
+            show: false,
+            fontWeight: "bold",
+            formatter: (params: { name?: string }) => {
+              const code = params.name ? geoNameToCode[params.name] : undefined;
+              return code ? (t(`area.${code}`) || params.name || "") : (params.name || "");
+            }
+          },
           itemStyle: {
             areaColor: theme.isDark ? "#4a7cb5" : "#6f94f1"
           }

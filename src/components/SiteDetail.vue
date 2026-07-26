@@ -175,7 +175,7 @@
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.area != undefined">
             <p class="page-item" v-for="(i, idx) in resData.area" :key="idx">
               <img :src="getIcon(i.name)" />
-              <span class="line-clamp-1">{{ i.code }}</span>
+              <span class="line-clamp-1">{{ t(`area.${i.code}`) }}</span>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
             </p>
