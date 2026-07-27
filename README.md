@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://iris.exi.software/">Demo</a> ·
   <a href="#deployment">Deployment</a> ·
-  <a href="https://exi.ink/posts/cloudflare-page%E9%83%A8%E7%BD%B2iris-analytics%E7%BD%91%E7%AB%99%E5%88%86%E6%9E%90/">Deployment Guide</a>
+  <a href="https://exi.ink/posts/cloudflare-page%E9%83%A8%E7%BD%B2iris-analytics%E7%BD%91%E7%AB%99%E5%88%86%E6%9E%90/">Deployment Guide (Chinese)</a>
 </p>
 
 <p align="center">
