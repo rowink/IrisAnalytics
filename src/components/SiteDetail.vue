@@ -493,17 +493,22 @@ watch(
   }
 );
 
+let resizeObserver: ResizeObserver | null = null;
+
 onMounted(() => {
   // Initialize ECharts
   if (echartsDOM.value) {
     canvasMain = markRaw(echarts.init(echartsDOM.value, null, { renderer: "svg", useDirtyRect: true }));
-    window.addEventListener("resize", () => canvasMain?.resize());
+    resizeObserver = new ResizeObserver(() => canvasMain?.resize());
+    resizeObserver.observe(echartsDOM.value);
   }
   // Fetch data on mount
   if (props.siteId) getDatas();
 });
 
 onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
   canvasMain?.dispose();
   canvasMain = null;
 });

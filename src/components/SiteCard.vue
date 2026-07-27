@@ -147,7 +147,7 @@ const renderSparkline = () => {
   });
 };
 
-const handleResize = () => chart?.resize();
+let resizeObserver: ResizeObserver | null = null;
 
 watch(
   () => props.echartsData,
@@ -166,11 +166,15 @@ watch(
 
 onMounted(() => {
   if (props.echartsData) renderSparkline();
-  window.addEventListener("resize", handleResize);
+  if (sparklineRef.value) {
+    resizeObserver = new ResizeObserver(() => chart?.resize());
+    resizeObserver.observe(sparklineRef.value);
+  }
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("resize", handleResize);
+  resizeObserver?.disconnect();
+  resizeObserver = null;
   chart?.dispose();
 });
 </script>
