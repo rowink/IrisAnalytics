@@ -11,7 +11,7 @@
   "sidebar.overview": "Overview",
 
   "overview.title": "Site Overview",
-  "overview.subtitle": "{count} site(s) total",
+  "overview.subtitle": "{count} site total | {count} sites total",
   "overview.emptyTitle": "No site data",
   "overview.emptyDesc": "Make sure the tracking code is properly integrated and there is valid traffic.",
   "overview.selectPeriod": "Select period",

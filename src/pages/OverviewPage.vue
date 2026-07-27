@@ -71,7 +71,7 @@ const timeList = computed(() => [
       <div class="overview-header">
         <div class="overview-header-left">
           <h2 class="overview-title">{{ t("overview.title") }}</h2>
-          <p class="overview-subtitle">{{ t("overview.subtitle", { count: overviewSites.length }) }}</p>
+          <p class="overview-subtitle">{{ t("overview.subtitle", overviewSites.length, { count: overviewSites.length }) }}</p>
         </div>
         <div class="overview-header-right">
           <div class="relative w-full sm:w-auto">

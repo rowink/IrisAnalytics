@@ -11,7 +11,7 @@ export default function setupI18n() {
 
   const i18n = createI18n({
     locale: settings.locale,
-    fallbackLocale: "zh-CN",
+    fallbackLocale: "en",
     messages: { "zh-CN": zhCN, "en": en }
   });
 
