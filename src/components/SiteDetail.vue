@@ -544,7 +544,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 10px;
   min-width: 80px;
 }
 
@@ -686,5 +686,20 @@ onBeforeUnmount(() => {
 
 :root.dark .page-item img {
   border-color: #3f3f46;
+}
+
+@media (max-width: 640px) {
+  .stats-bar {
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .stats-item p {
+    font-size: 22px;
+  }
+
+  .stats-item span {
+    font-size: 14px;
+  }
 }
 </style>

@@ -37,15 +37,15 @@
       <template v-else>
         <div class="flex gap-4 mb-3">
           <div class="stat-item">
-            <span class="stat-label">Views</span>
+            <span class="stat-label">{{ t("detail.views") }}</span>
             <p class="stat-value">{{ displayVisit.views }}</p>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Visitors</span>
+            <span class="stat-label">{{ t("detail.visitors") }}</span>
             <p class="stat-value">{{ displayVisit.visitor }}</p>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Visits</span>
+            <span class="stat-label">{{ t("detail.visits") }}</span>
             <p class="stat-value">{{ displayVisit.visit }}</p>
           </div>
         </div>
@@ -60,6 +60,7 @@ import { ref, onMounted, onBeforeUnmount, watch, markRaw, computed } from "vue";
 import * as echarts from "echarts";
 import { Globe, Pin, PinOff } from "lucide-vue-next";
 import { useThemeStore } from "@/stores/theme";
+import { useI18n } from "vue-i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -77,6 +78,7 @@ const props = defineProps<{
 }>();
 const faviconFailed = ref(false);
 const theme = useThemeStore();
+const { t } = useI18n();
 
 defineEmits<{
   select: [siteId: string];

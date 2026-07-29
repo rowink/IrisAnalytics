@@ -27,9 +27,9 @@
   "time.hour": "点",
   "time.day": "日",
 
-  "detail.views": "Views",
-  "detail.visitors": "Visitors",
-  "detail.visits": "Visits",
+  "detail.views": "浏览量",
+  "detail.visitors": "访客数",
+  "detail.visits": "访问次数",
   "detail.pages": "页面",
   "detail.referrers": "来源",
   "detail.browsers": "浏览器",
