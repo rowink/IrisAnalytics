@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { useMediaQuery } from "@vueuse/core";
-import { PanelLeftClose, PanelLeftOpen, X } from "lucide-vue-next";
+import { PanelLeftClose, PanelLeftOpen, X } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 import SidebarNav from "./SidebarNav.vue";
 

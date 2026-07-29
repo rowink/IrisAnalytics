@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, markRaw, computed } from "vue";
 import * as echarts from "echarts";
-import { Globe, Pin, PinOff } from "lucide-vue-next";
+import { Globe, Pin, PinOff } from "@lucide/vue";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

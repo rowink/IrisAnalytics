@@ -52,7 +52,7 @@
 import { ref, onMounted, nextTick, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { Loader2, Languages, Sun, Moon } from "lucide-vue-next";
+import { Loader2, Languages, Sun, Moon } from "@lucide/vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
 import type { Locale } from "@/i18n/locales";

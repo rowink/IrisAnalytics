@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutDashboard, Globe } from "lucide-vue-next";
+import { LayoutDashboard, Globe } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();

@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, provide } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { Menu, Sun, Moon, Settings } from "lucide-vue-next";
+import { Menu, Sun, Moon, Settings } from "@lucide/vue";
 import { Toaster } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
 import vh from "vh-plugin";

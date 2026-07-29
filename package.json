@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@lucide/vue": "^1.0.0",
     "@radix-icons/vue": "^1.0.0",
     "@surbowl/world-geo-json-zh": "^2.1.5",
     "@vueuse/core": "^14.3.0",
@@ -20,7 +21,7 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
     "echarts": "^6.1.0",
-    "lucide-vue-next": "^1.0.0",
+    "isbot": "^5.2.1",
     "pinia": "^4.0.2",
     "pinia-plugin-persistedstate": "^4.7.1",
     "radix-vue": "^1.9.17",

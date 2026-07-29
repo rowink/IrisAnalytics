@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import type { Ref } from "vue";
 import SiteCard from "@/components/SiteCard.vue";
 import { Input } from "@/components/ui/input";
-import { Clock, Search } from "lucide-vue-next";
+import { Clock, Search } from "@lucide/vue";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useI18n } from "vue-i18n";
 import { usePinnedCardsStore } from "@/stores/pinnedCards";

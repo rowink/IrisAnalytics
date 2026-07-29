@@ -230,7 +230,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
 import * as echarts from "echarts";
-import { Clock, ExternalLink } from "lucide-vue-next";
+import { Clock, ExternalLink } from "@lucide/vue";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
 import WorldMap from "@/components/WorldMap.vue";
