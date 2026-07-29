@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { transformSync } from "esbuild";
+import { build } from "esbuild";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
@@ -14,17 +14,20 @@ const dir = fileURLToPath(new URL(".", import.meta.url));
 function trackerMinifyPlugin(): import("vite").Plugin {
   return {
     name: "tracker-minify",
-    buildStart() {
-      const src = resolve(dir, "public/tracker.js");
+    async buildStart() {
+      const src = resolve(dir, "src/tracker/tracker.js");
       const dest = resolve(dir, "public/tracker.min.js");
-      const code = readFileSync(src, "utf-8");
-      const result = transformSync(code, {
+      const result = await build({
+        entryPoints: [src],
+        bundle: true,
         minify: true,
-        sourcemap: false,
-        target: "es2015"
+        format: "iife",
+        target: "es2015",
+        write: false,
+        logLevel: "silent"
       });
-      writeFileSync(dest, result.code, "utf-8");
-      console.log(`✓ regenerated tracker.min.js (${result.code.length} bytes)`);
+      writeFileSync(dest, result.outputFiles[0].text, "utf-8");
+      console.log(`✓ regenerated tracker.min.js (${result.outputFiles[0].text.length} bytes)`);
     }
   };
 }

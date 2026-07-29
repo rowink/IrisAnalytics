@@ -1,9 +1,10 @@
-((window) => {
-  const { location, document, navigator } = window;
-  const { hostname: host, pathname } = location;
-  const { currentScript, referrer } = document;
-  const currentRef = !referrer.includes(host) ? referrer : "";
-  if (!currentScript || navigator.userAgent.indexOf("Electron") > 0) return;
+import { isHuman } from "bot-signal";
+
+const { hostname: host, pathname } = location;
+const { currentScript, referrer } = document;
+const currentRef = !referrer.includes(host) ? referrer : "";
+
+if (currentScript && navigator.userAgent.indexOf("Electron") <= 0) {
   const attr = currentScript.getAttribute.bind(currentScript);
   const website = attr("data-website-id");
   const sendURL = new URL(currentScript.src).origin + "/send";
@@ -15,7 +16,7 @@
   let PathVisit = {};
   try {
     PathVisit = JSON.parse(localStorage.getItem("_vhLastVisit")) || {};
-    if (typeof PathVisit != "object") PathVisit = {};
+    if (typeof PathVisit !== "object") PathVisit = {};
   } catch (error) {
     localStorage.removeItem("_vhLastVisit");
   }
@@ -27,19 +28,19 @@
   const vhLastVisitorDate = new Date(Number(vhLastVisitor));
   const vhLastVisitDate = new Date(Number(vhLastVisit));
   // 访客访问
-  if (nowVisitDate.getFullYear() === vhLastVisitorDate.getFullYear() && nowVisitDate.getMonth() === vhLastVisitorDate.getMonth() && nowVisitDate.getDate() === vhLastVisitorDate.getDate()) {
-    // 今天缓存即老用户
+  if (
+    nowVisitDate.getFullYear() === vhLastVisitorDate.getFullYear() &&
+    nowVisitDate.getMonth() === vhLastVisitorDate.getMonth() &&
+    nowVisitDate.getDate() === vhLastVisitorDate.getDate()
+  ) {
     visitor = false;
   } else {
-    // 否则更新缓存时间
     localStorage.setItem("_vhLastVisitor", Date.now());
   }
   // 访问次数访问
   if (Date.now() - vhLastVisitDate.getTime() < AccessInterval * 60 * 1000) {
-    // 超过访问间隔即老访客
     visit = false;
   } else {
-    // 否则更新缓存时间
     PathVisit[pathname] = Date.now();
     localStorage.setItem("_vhLastVisit", JSON.stringify(PathVisit));
   }
@@ -67,15 +68,16 @@
           path: encode(pathname),
           referrer: encode(currentRef),
           visitor,
-          visit
+          visit,
+          isHuman: isHuman(window),
         }),
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
     } catch (e) {
       /* empty */
     }
   };
   send();
-})(window);
+}

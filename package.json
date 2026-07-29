@@ -17,6 +17,7 @@
     "@radix-icons/vue": "^1.0.0",
     "@surbowl/world-geo-json-zh": "^2.1.5",
     "@vueuse/core": "^14.3.0",
+    "bot-signal": "^2.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
