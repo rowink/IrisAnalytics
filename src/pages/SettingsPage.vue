@@ -58,7 +58,7 @@ function switchLocale(locale: Locale) {
           <button class="back-btn" @click="goBack" :title="t('header.backToOverview')">
             <ChevronLeft class="w-4 h-4" />
           </button>
-          <span>设置</span>
+          <span>{{ t("header.settings") }}</span>
         </div>
         <button v-for="tab in tabs" :key="tab.key" class="nav-item" :class="{ active: activeTab === tab.key }" @click="selectTab(tab.key)">
           <component :is="tab.icon" class="nav-icon" />
@@ -72,7 +72,7 @@ function switchLocale(locale: Locale) {
           <div v-if="isMobile && mobileMenuOpen" class="drawer-overlay" @click.self="mobileMenuOpen = false">
             <aside class="mobile-nav">
               <div class="mobile-nav-header">
-                <span>设置</span>
+                <span>{{ t("header.settings") }}</span>
                 <button class="close-btn" @click="mobileMenuOpen = false">
                   <X class="w-4 h-4" />
                 </button>
