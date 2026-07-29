@@ -1,3 +1,4 @@
+import { isbot } from "isbot";
 import { UAParser } from "ua-parser-js";
 export async function onRequest({ request, env }) {
   try {
@@ -15,6 +16,9 @@ export async function onRequest({ request, env }) {
     }
     // UA
     const userAgent = request.headers.get("user-agent") || undefined;
+    if (userAgent && isbot(userAgent)) {
+      return Response.json({ success: true, message: "ok" }, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
+    }
     const parsedUserAgent = new UAParser(userAgent);
     const { browser, os, device } = parsedUserAgent.getResult();
     // Area
