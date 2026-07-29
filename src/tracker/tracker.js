@@ -28,11 +28,7 @@ if (currentScript && navigator.userAgent.indexOf("Electron") <= 0) {
   const vhLastVisitorDate = new Date(Number(vhLastVisitor));
   const vhLastVisitDate = new Date(Number(vhLastVisit));
   // 访客访问
-  if (
-    nowVisitDate.getFullYear() === vhLastVisitorDate.getFullYear() &&
-    nowVisitDate.getMonth() === vhLastVisitorDate.getMonth() &&
-    nowVisitDate.getDate() === vhLastVisitorDate.getDate()
-  ) {
+  if (nowVisitDate.getFullYear() === vhLastVisitorDate.getFullYear() && nowVisitDate.getMonth() === vhLastVisitorDate.getMonth() && nowVisitDate.getDate() === vhLastVisitorDate.getDate()) {
     visitor = false;
   } else {
     localStorage.setItem("_vhLastVisitor", Date.now());
@@ -69,11 +65,11 @@ if (currentScript && navigator.userAgent.indexOf("Electron") <= 0) {
           referrer: encode(currentRef),
           visitor,
           visit,
-          isHuman: isHuman(window),
+          isHuman: isHuman(window)
         }),
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       });
     } catch (e) {
       /* empty */
