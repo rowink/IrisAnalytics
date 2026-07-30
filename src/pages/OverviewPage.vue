@@ -58,6 +58,8 @@ const sortedSites = computed(() => {
 const timeList = computed(() => [
   { name: t("time.today"), value: "today" },
   { name: t("time.yesterday"), value: "1d" },
+  { name: t("time.thisWeek"), value: "week" },
+  { name: t("time.thisMonth"), value: "month" },
   { name: t("time.last7days"), value: "7d" },
   { name: t("time.last30days"), value: "30d" },
   { name: t("time.last60days"), value: "60d" },

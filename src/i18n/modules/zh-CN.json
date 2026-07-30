@@ -20,6 +20,8 @@
 
   "time.today": "今天",
   "time.yesterday": "昨天",
+  "time.thisWeek": "本周",
+  "time.thisMonth": "本月",
   "time.last7days": "最近 7 天",
   "time.last30days": "最近 30 天",
   "time.last60days": "最近 60 天",

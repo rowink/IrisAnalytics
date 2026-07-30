@@ -48,7 +48,7 @@ export async function onRequest({ request, env }) {
     // 时区
     const tz = request.cf.timezone || "Asia/Shanghai";
     // 周期校验
-    const timeArr = ["today", "1d", "7d", "30d", "60d", "90d"];
+    const timeArr = ["today", "1d", "week", "month", "7d", "30d", "60d", "90d"];
     if (!timeArr.includes(time)) time = "today";
     const data = await vh_INIT(env, time, siteID, tz, type);
     return jsonResp({ success: true, data }, refreshedToken);

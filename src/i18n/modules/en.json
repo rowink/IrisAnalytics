@@ -20,6 +20,8 @@
 
   "time.today": "Today",
   "time.yesterday": "Yesterday",
+  "time.thisWeek": "This Week",
+  "time.thisMonth": "This Month",
   "time.last7days": "Last 7 days",
   "time.last30days": "Last 30 days",
   "time.last60days": "Last 60 days",

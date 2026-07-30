@@ -132,6 +132,8 @@ function switchLocale(locale: Locale) {
                     <SelectGroup>
                       <SelectItem value="today">{{ t("time.today") }}</SelectItem>
                       <SelectItem value="1d">{{ t("time.yesterday") }}</SelectItem>
+                      <SelectItem value="week">{{ t("time.thisWeek") }}</SelectItem>
+                      <SelectItem value="month">{{ t("time.thisMonth") }}</SelectItem>
                       <SelectItem value="7d">{{ t("time.last7days") }}</SelectItem>
                       <SelectItem value="30d">{{ t("time.last30days") }}</SelectItem>
                       <SelectItem value="60d">{{ t("time.last60days") }}</SelectItem>

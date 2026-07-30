@@ -7,18 +7,28 @@ dayjs.extend(timezone);
 // SqlTIme格式化
 export const formatTime = (timeStr, tz) => {
   const defaultTz = new Intl.DateTimeFormat([], { timeZone: undefined }).resolvedOptions().timeZone || "UTC";
-  const startDay = dayjs()
-    .tz(tz)
-    .subtract(Number(timeStr.replace("d", "")), "day")
-    .startOf("day")
-    .tz(defaultTz)
-    .format("YYYY-MM-DD HH:mm:ss");
-  const endDay = dayjs()
-    .tz(tz)
-    .add(timeStr == "1d" ? 0 : 1, "day")
-    .startOf("day")
-    .tz(defaultTz)
-    .format("YYYY-MM-DD HH:mm:ss");
+  const now = dayjs().tz(tz);
+  let startDay, endDay;
+  if (timeStr === "week") {
+    const dayOfWeek = now.day();
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    startDay = now.subtract(diffToMonday, "day").startOf("day").tz(defaultTz).format("YYYY-MM-DD HH:mm:ss");
+    endDay = now.add(1, "day").startOf("day").tz(defaultTz).format("YYYY-MM-DD HH:mm:ss");
+  } else if (timeStr === "month") {
+    startDay = now.startOf("month").tz(defaultTz).format("YYYY-MM-DD HH:mm:ss");
+    endDay = now.add(1, "day").startOf("day").tz(defaultTz).format("YYYY-MM-DD HH:mm:ss");
+  } else {
+    startDay = now
+      .subtract(Number(timeStr.replace("d", "")), "day")
+      .startOf("day")
+      .tz(defaultTz)
+      .format("YYYY-MM-DD HH:mm:ss");
+    endDay = now
+      .add(timeStr == "1d" ? 0 : 1, "day")
+      .startOf("day")
+      .tz(defaultTz)
+      .format("YYYY-MM-DD HH:mm:ss");
+  }
   let sqlTime = "";
   switch (timeStr) {
     case "1d":
@@ -26,10 +36,12 @@ export const formatTime = (timeStr, tz) => {
     case "30d":
     case "60d":
     case "90d":
+    case "week":
+    case "month":
       sqlTime = `toDateTime('${startDay}') AND timestamp < toDateTime('${endDay}')`;
       break;
     default:
-      sqlTime = `NOW() - INTERVAL '${dayjs().tz(tz).hour()}' HOUR`;
+      sqlTime = `NOW() - INTERVAL '${now.hour()}' HOUR`;
   }
   return sqlTime;
 };
@@ -55,6 +67,22 @@ export const countData = (arr, key, keyType, status = true) => {
     case "1d":
       Array.from({ length: 24 }).forEach((i, idx) => {
         timeArr[`${String(idx).padStart(2, "0")}${_StringKey}`] = 0;
+      });
+      break;
+
+    case "week":
+      {
+        const dayOfWeek = keyType.now.day();
+        const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        Array.from({ length: diffToMonday + 1 }).forEach((i, idx) => {
+          timeArr[`${keyType.now.subtract(diffToMonday - idx, "day").format("MM.DD")}${_StringKey}`] = 0;
+        });
+      }
+      break;
+
+    case "month":
+      Array.from({ length: keyType.now.date() }).forEach((i, idx) => {
+        timeArr[`${keyType.now.startOf("month").add(idx, "day").format("MM.DD")}${_StringKey}`] = 0;
       });
       break;
 
