@@ -17,6 +17,7 @@
   "overview.selectPeriod": "Select period",
   "overview.searchPlaceholder": "Search sites...",
   "overview.noSearchResults": "No matching sites found",
+  "overview.emptyFilterDesc": "No data under current conditions, try different filters~",
 
   "time.today": "Today",
   "time.yesterday": "Yesterday",
@@ -77,6 +78,7 @@
   "settings.feedback": "Feedback",
 
   "common.loading": "Loading...",
+  "common.noData": "No data",
   "common.save": "Save",
   "common.cancel": "Cancel",
   "common.close": "Close",

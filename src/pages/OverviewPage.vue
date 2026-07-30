@@ -112,7 +112,7 @@ const timeList = computed(() => [
       <div v-else-if="sortedSites.length === 0" class="empty-state">
         <img class="empty-state-image" src="/icon/data/icon_data_empty.png" />
         <p class="empty-state-title">{{ t("overview.noSearchResults") }}</p>
-        <p class="empty-state-desc">当前条件下暂无数据，换个条件试试吧~</p>
+        <p class="empty-state-desc">{{ t("overview.emptyFilterDesc") }}</p>
       </div>
 
       <div v-else class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4">

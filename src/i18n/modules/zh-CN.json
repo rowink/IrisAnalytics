@@ -17,6 +17,7 @@
   "overview.selectPeriod": "选择周期",
   "overview.searchPlaceholder": "搜索站点...",
   "overview.noSearchResults": "没有找到匹配的站点",
+  "overview.emptyFilterDesc": "当前条件下暂无数据，换个条件试试吧~",
 
   "time.today": "今天",
   "time.yesterday": "昨天",
@@ -77,6 +78,7 @@
   "settings.copied": "已复制",
 
   "common.loading": "加载中...",
+  "common.noData": "暂无数据",
   "common.save": "保存",
   "common.cancel": "取消",
   "common.close": "关闭",

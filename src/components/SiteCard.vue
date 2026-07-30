@@ -107,7 +107,7 @@ const renderSparkline = () => {
   if (isEmpty) {
     if (chart) chart.dispose();
     chart = null;
-    sparklineRef.value.innerHTML = '<div class="empty-chart">暂无数据</div>';
+    sparklineRef.value.innerHTML = `<div class="empty-chart">${t("common.noData")}</div>`;
     return;
   }
 
