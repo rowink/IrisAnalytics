@@ -1,9 +1,11 @@
 import { formatTime, countData, echartsData } from "./index.js";
+// siteID 会拼进 Analytics Engine 原始 SQL，必须转义单引号防止注入（SQLite 方言：' -> ''）
+const escapeSql = (str) => String(str).replace(/'/g, "''");
 export const vh_INIT = async (env, time, siteID, tz, type = null) => {
   // 查询
   const defaultHeaders = { "content-type": "application/json;charset=UTF-8", "X-Source": "Cloudflare-Workers", Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}` };
   const defaultUrl = `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/analytics_engine/sql`;
-  const SQL_WHERE = `FROM AnalyticsDataset WHERE timestamp >= ${formatTime(time, tz)} AND blob1 = '${siteID}'`;
+  const SQL_WHERE = `FROM AnalyticsDataset WHERE timestamp >= ${formatTime(time, tz)} AND blob1 = '${escapeSql(siteID)}'`;
   let resJSON;
   switch (type) {
     // 获取数据

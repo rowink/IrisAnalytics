@@ -9,6 +9,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
 import type { Locale } from "@/i18n/locales";
+import { createSign } from "@/utils/sign";
 import { version } from "../../package.json";
 
 const settings = useSettingsStore();
@@ -48,10 +49,12 @@ const badgePeriods = [
 ];
 
 const buildBadgeUrl = (style: "uv" | "pv") => {
-  const params = new URLSearchParams({ siteID: websiteId.value.trim(), time: badgePeriod.value, style });
+  const siteID = websiteId.value.trim();
+  const params = new URLSearchParams({ siteID, time: badgePeriod.value, style });
   const custom = style === "uv" ? badgeLabelUv.value : badgeLabelPv.value;
   const label = custom.trim() || t(badgeLabelKeys[style][badgePeriod.value]);
   params.set("label", label);
+  params.set("sign", createSign(siteID, location.host));
   return `${location.origin}/badge?${params.toString()}`;
 };
 
