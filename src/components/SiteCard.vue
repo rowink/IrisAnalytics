@@ -216,6 +216,8 @@ onBeforeUnmount(() => {
 .sparkline-container {
   width: 100%;
   height: 60px;
+  display: flex;
+  align-item: center;
 }
 
 .empty-chart {

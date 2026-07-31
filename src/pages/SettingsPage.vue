@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, inject } from "vue";
+import { ref, computed, inject, watch } from "vue";
 import type { Ref } from "vue";
 import { useRouter } from "vue-router";
 import { Settings, Palette, Info, Code, ChevronLeft, X, Copy, Check, ExternalLink } from "@lucide/vue";
@@ -20,7 +20,6 @@ const activeTab = ref("general");
 const isMobile = useMediaQuery("(max-width: 768px)");
 const mobileMenuOpen = inject<Ref<boolean>>("mobileMenuOpen")!;
 
-// Tools: script generator
 const websiteId = ref("");
 const scriptTag = computed(() => {
   const host = location.host;
@@ -29,6 +28,72 @@ const scriptTag = computed(() => {
   return `<script defer src="https://${host}/tracker.min.js" data-website-id="${id}"><` + `/script>`;
 });
 const { copy, copied } = useClipboard();
+
+// Tools: badge embed
+const badgePeriod = ref("today");
+const badgeLabelUv = ref("");
+const badgeLabelPv = ref("");
+const previewFailed = ref(false);
+const { copy: copyBadge, copied: badgeCopied } = useClipboard();
+
+const badgePeriods = [
+  { label: t("time.today"), value: "today" },
+  { label: t("time.yesterday"), value: "1d" },
+  { label: t("time.thisWeek"), value: "week" },
+  { label: t("time.thisMonth"), value: "month" },
+  { label: t("time.last7days"), value: "7d" },
+  { label: t("time.last30days"), value: "30d" },
+  { label: t("time.last60days"), value: "60d" },
+  { label: t("time.last90days"), value: "90d" }
+];
+
+const buildBadgeUrl = (style: "uv" | "pv") => {
+  const params = new URLSearchParams({ siteID: websiteId.value.trim(), time: badgePeriod.value, style });
+  const custom = style === "uv" ? badgeLabelUv.value : badgeLabelPv.value;
+  const label = custom.trim() || t(badgeLabelKeys[style][badgePeriod.value]);
+  params.set("label", label);
+  return `${location.origin}/badge?${params.toString()}`;
+};
+
+// 周期 → i18n 默认徽标标题（用户未自定义时使用，随周期联动，按徽标类型区分访客/浏览）
+const badgeLabelKeys: Record<"uv" | "pv", Record<string, string>> = {
+  uv: {
+    today: "badge.labelUvToday",
+    "1d": "badge.labelUvYesterday",
+    week: "badge.labelUvThisWeek",
+    month: "badge.labelUvThisMonth",
+    "7d": "badge.labelUv7d",
+    "30d": "badge.labelUv30d",
+    "60d": "badge.labelUv60d",
+    "90d": "badge.labelUv90d"
+  },
+  pv: {
+    today: "badge.labelPvToday",
+    "1d": "badge.labelPvYesterday",
+    week: "badge.labelPvThisWeek",
+    month: "badge.labelPvThisMonth",
+    "7d": "badge.labelPv7d",
+    "30d": "badge.labelPv30d",
+    "60d": "badge.labelPv60d",
+    "90d": "badge.labelPv90d"
+  }
+};
+
+const badgeUrls = computed(() => {
+  if (!websiteId.value.trim()) return [];
+  return (["pv", "uv"] as const).map(buildBadgeUrl);
+});
+
+const badgeEmbed = computed((): string | null => {
+  const urls = badgeUrls.value;
+  if (!urls.length) return null;
+  return `<!-- Iris Analytics Badge -->
+${urls.map((url) => `<img src="${url}" alt="Iris Analytics Badge" />`).join("\n")}`;
+});
+
+watch([websiteId, badgePeriod, badgeLabelUv, badgeLabelPv], () => {
+  previewFailed.value = false;
+});
 
 const selectTab = (key: string) => {
   activeTab.value = key;
@@ -99,7 +164,7 @@ function switchLocale(locale: Locale) {
                 <span class="setting-desc">{{ t("settings.languageDesc") }}</span>
               </div>
               <div class="setting-control">
-                <Select :model-value="settings.locale" @update:model-value="switchLocale($event as Locale)">
+                <Select :model-value="settings.locale" @update:model-value="(v: string) => switchLocale(v as Locale)">
                   <SelectTrigger class="w-[130px] sm:w-[180px]">
                     <SelectValue />
                   </SelectTrigger>
@@ -196,6 +261,70 @@ function switchLocale(locale: Locale) {
                 </button>
               </div>
               <pre class="code-block"><code>{{ scriptTag }}</code></pre>
+            </div>
+            <!-- Period selector -->
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.badgePeriod") }}</span>
+              </div>
+              <div class="setting-control">
+                <Select :model-value="badgePeriod" @update:model-value="badgePeriod = $event">
+                  <SelectTrigger class="w-[130px] sm:w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem v-for="p in badgePeriods" :key="p.value" :value="p.value">{{ p.label }}</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <!-- Visitor badge label -->
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.badgeLabelUv") }}</span>
+              </div>
+              <div class="setting-control">
+                <input v-model="badgeLabelUv" type="text" maxlength="50" :placeholder="t(badgeLabelKeys.uv[badgePeriod])" class="tools-input" />
+              </div>
+            </div>
+
+            <!-- Views badge label -->
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.badgeLabelPv") }}</span>
+              </div>
+              <div class="setting-control">
+                <input v-model="badgeLabelPv" type="text" maxlength="50" :placeholder="t(badgeLabelKeys.pv[badgePeriod])" class="tools-input" />
+              </div>
+            </div>
+
+            <!-- Live preview -->
+            <div v-if="badgeUrls.length" class="code-preview-row">
+              <div class="code-preview-header">
+                <span class="code-preview-label">{{ t("settings.badgePreview") }}</span>
+              </div>
+              <div class="badge-preview-area">
+                <template v-if="!previewFailed">
+                  <img v-for="url in badgeUrls" :key="url" :src="url" alt="Iris Analytics Badge" class="badge-preview-img" @error="previewFailed = true" />
+                </template>
+                <span v-else class="badge-preview-error">{{ t("settings.badgePreviewError") }}</span>
+              </div>
+            </div>
+
+            <!-- Embed code -->
+            <div v-if="badgeEmbed" class="code-preview-row">
+              <div class="code-preview-header">
+                <span class="code-preview-label">{{ t("settings.badgeCode") }}</span>
+                <button class="copy-btn" :class="{ copied: badgeCopied }" @click="copyBadge(badgeEmbed)" :title="badgeCopied ? t('settings.copied') : t('settings.badgeCopyCode')">
+                  <Copy v-if="!badgeCopied" class="w-4 h-4" />
+                  <Check v-else class="w-4 h-4" />
+                </button>
+              </div>
+              <pre class="code-block badge-code-block"><code>{{ badgeEmbed }}</code></pre>
+              <p class="badge-embed-hint">{{ t("settings.badgeEmbedHint") }}</p>
             </div>
           </div>
         </section>
@@ -636,6 +765,40 @@ function switchLocale(locale: Locale) {
 
 .code-block code {
   word-break: keep-all;
+}
+
+/* ── Badge embed ── */
+.badge-preview-area {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  min-height: 100px;
+}
+
+.badge-preview-img {
+  height: 100px;
+  width: auto;
+  display: block;
+}
+
+.badge-preview-error {
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.badge-embed-hint {
+  margin: 0 20px 16px;
+  font-size: 12px;
+  color: #a1a1aa;
+  line-height: 1.5;
+}
+
+.badge-code-block {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 /* ── Mobile drawer ── */
