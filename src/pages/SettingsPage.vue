@@ -120,10 +120,14 @@ ${urls.map((url) => `<img src="${url}" alt="Iris Analytics Badge" />`).join("\n"
 
 // 输入防抖：websiteId/label 逐字符输入时避免频繁请求 /sign
 const debouncedLoadBadgeUrls = useDebounceFn(loadBadgeUrls, 500);
-watch([websiteId, badgePeriod, badgeLabelUv, badgeLabelPv], () => {
-  previewFailed.value = false;
-  debouncedLoadBadgeUrls();
-}, { immediate: true });
+watch(
+  [websiteId, badgePeriod, badgeLabelUv, badgeLabelPv],
+  () => {
+    previewFailed.value = false;
+    debouncedLoadBadgeUrls();
+  },
+  { immediate: true }
+);
 
 const selectTab = (key: string) => {
   activeTab.value = key;
