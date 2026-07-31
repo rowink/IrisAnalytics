@@ -3,13 +3,12 @@ import { ref, computed, inject, watch } from "vue";
 import type { Ref } from "vue";
 import { useRouter } from "vue-router";
 import { Settings, Palette, Info, Code, ChevronLeft, X, Copy, Check, ExternalLink } from "@lucide/vue";
-import { useMediaQuery, useClipboard } from "@vueuse/core";
+import { useMediaQuery, useClipboard, useDebounceFn } from "@vueuse/core";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
 import type { Locale } from "@/i18n/locales";
-import { createSign } from "@/utils/sign";
 import { version } from "../../package.json";
 
 const settings = useSettingsStore();
@@ -48,13 +47,13 @@ const badgePeriods = [
   { label: t("time.last90days"), value: "90d" }
 ];
 
-const buildBadgeUrl = (style: "uv" | "pv") => {
+const buildBadgeUrl = (style: "uv" | "pv", sign: string) => {
   const siteID = websiteId.value.trim();
   const params = new URLSearchParams({ siteID, time: badgePeriod.value, style });
   const custom = style === "uv" ? badgeLabelUv.value : badgeLabelPv.value;
   const label = custom.trim() || t(badgeLabelKeys[style][badgePeriod.value]);
   params.set("label", label);
-  params.set("sign", createSign(siteID, location.host));
+  params.set("sign", sign);
   return `${location.origin}/badge?${params.toString()}`;
 };
 
@@ -82,10 +81,35 @@ const badgeLabelKeys: Record<"uv" | "pv", Record<string, string>> = {
   }
 };
 
-const badgeUrls = computed(() => {
-  if (!websiteId.value.trim()) return [];
-  return (["pv", "uv"] as const).map(buildBadgeUrl);
-});
+// 签名由服务端生成（盐仅存于服务端 env），前端不接触盐
+const badgeUrls = ref<string[]>([]);
+let badgeReqSeq = 0;
+
+const loadBadgeUrls = async () => {
+  const siteID = websiteId.value.trim();
+  const seq = ++badgeReqSeq;
+  if (!siteID) {
+    badgeUrls.value = [];
+    previewFailed.value = false;
+    return;
+  }
+  try {
+    const res = await fetch(`/sign?siteID=${encodeURIComponent(siteID)}`);
+    const data = await res.json();
+    if (seq !== badgeReqSeq) return;
+    if (!res.ok || !data.success) {
+      badgeUrls.value = [];
+      previewFailed.value = true;
+      return;
+    }
+    badgeUrls.value = (["pv", "uv"] as const).map((style) => buildBadgeUrl(style, data.sign));
+    previewFailed.value = false;
+  } catch {
+    if (seq !== badgeReqSeq) return;
+    badgeUrls.value = [];
+    previewFailed.value = true;
+  }
+};
 
 const badgeEmbed = computed((): string | null => {
   const urls = badgeUrls.value;
@@ -94,9 +118,12 @@ const badgeEmbed = computed((): string | null => {
 ${urls.map((url) => `<img src="${url}" alt="Iris Analytics Badge" />`).join("\n")}`;
 });
 
+// 输入防抖：websiteId/label 逐字符输入时避免频繁请求 /sign
+const debouncedLoadBadgeUrls = useDebounceFn(loadBadgeUrls, 500);
 watch([websiteId, badgePeriod, badgeLabelUv, badgeLabelPv], () => {
   previewFailed.value = false;
-});
+  debouncedLoadBadgeUrls();
+}, { immediate: true });
 
 const selectTab = (key: string) => {
   activeTab.value = key;

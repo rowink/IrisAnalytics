@@ -66,7 +66,7 @@ export async function onRequest({ request, env }) {
     // 签名校验（宽松模式：无/错 sign 时返回占位数据 value=0，不报错）
     const host = request.headers.get("host") || url.host;
     const sign = url.searchParams.get("sign") || "";
-    const valid = verifySign(siteID, host, sign);
+    const valid = verifySign(siteID, host, sign, env.CLOUDFLARE_ACCOUNT_ID);
 
     // 查询统计数据（uv=访客数，pv=浏览量；仅签名有效时查询，节省配额）
     let value = 0;
