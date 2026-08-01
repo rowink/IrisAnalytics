@@ -83,6 +83,7 @@ const badgeLabelKeys: Record<"uv" | "pv", Record<string, string>> = {
 
 // 签名由服务端生成（盐仅存于服务端 env），前端不接触盐
 const badgeUrls = ref<string[]>([]);
+const badgeSign = ref("");
 let badgeReqSeq = 0;
 
 const loadBadgeUrls = async () => {
@@ -90,6 +91,7 @@ const loadBadgeUrls = async () => {
   const seq = ++badgeReqSeq;
   if (!siteID) {
     badgeUrls.value = [];
+    badgeSign.value = "";
     previewFailed.value = false;
     return;
   }
@@ -99,14 +101,17 @@ const loadBadgeUrls = async () => {
     if (seq !== badgeReqSeq) return;
     if (!res.ok || !data.success) {
       badgeUrls.value = [];
+      badgeSign.value = "";
       previewFailed.value = true;
       return;
     }
     badgeUrls.value = (["pv", "uv"] as const).map((style) => buildBadgeUrl(style, data.sign));
+    badgeSign.value = data.sign;
     previewFailed.value = false;
   } catch {
     if (seq !== badgeReqSeq) return;
     badgeUrls.value = [];
+    badgeSign.value = "";
     previewFailed.value = true;
   }
 };
@@ -116,6 +121,16 @@ const badgeEmbed = computed((): string | null => {
   if (!urls.length) return null;
   return `<!-- Iris Analytics Badge -->
 ${urls.map((url) => `<img src="${url}" alt="Iris Analytics Badge" />`).join("\n")}`;
+});
+
+// Stats API：复用 /sign 获取的签名，time 与徽标周期联动
+const { copy: copyStatsUrl, copied: statsUrlCopied } = useClipboard();
+
+const statsUrl = computed((): string | null => {
+  const siteID = websiteId.value.trim();
+  if (!siteID || !badgeSign.value) return null;
+  const params = new URLSearchParams({ siteID, time: badgePeriod.value, sign: badgeSign.value });
+  return `${location.origin}/stats?${params.toString()}`;
 });
 
 // 输入防抖：websiteId/label 逐字符输入时避免频繁请求 /sign
@@ -286,7 +301,7 @@ function switchLocale(locale: Locale) {
                 <input v-model="websiteId" type="text" :placeholder="t('settings.websiteIdPlaceholder')" class="tools-input" />
               </div>
             </div>
-            <div v-if="scriptTag" class="code-preview-row">
+            <div v-if="scriptTag">
               <div class="code-preview-header">
                 <span class="code-preview-label">{{ t("settings.trackingCode") }}</span>
                 <button class="copy-btn" :class="{ copied }" @click="copy(scriptTag)" :title="copied ? t('settings.copied') : t('settings.copyCode')">
@@ -296,10 +311,32 @@ function switchLocale(locale: Locale) {
               </div>
               <pre class="code-block"><code>{{ scriptTag }}</code></pre>
             </div>
+
+            <!-- Badge image title & subtitle -->
+            <div class="setting-row code-preview-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.badgeImageTitle") }}</span>
+                <span class="setting-desc">{{ t("settings.badgeImageDesc") }}</span>
+              </div>
+            </div>
+
+            <!-- Live preview -->
+            <div v-if="badgeUrls.length">
+              <div class="code-preview-header">
+                <span class="code-preview-label">{{ t("settings.badgePreview") }}</span>
+              </div>
+              <div class="badge-preview-area">
+                <template v-if="!previewFailed">
+                  <img v-for="url in badgeUrls" :key="url" :src="url" alt="Iris Analytics Badge" class="badge-preview-img" @error="previewFailed = true" />
+                </template>
+                <span v-else class="badge-preview-error">{{ t("settings.badgePreviewError") }}</span>
+              </div>
+            </div>
+
             <!-- Period selector -->
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">{{ t("settings.badgePeriod") }}</span>
+                <span class="code-preview-label">{{ t("settings.badgePeriod") }}</span>
               </div>
               <div class="setting-control">
                 <Select :model-value="badgePeriod" @update:model-value="badgePeriod = $event">
@@ -318,7 +355,7 @@ function switchLocale(locale: Locale) {
             <!-- Visitor badge label -->
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">{{ t("settings.badgeLabelUv") }}</span>
+                <span class="code-preview-label">{{ t("settings.badgeLabelUv") }}</span>
               </div>
               <div class="setting-control">
                 <input v-model="badgeLabelUv" type="text" maxlength="50" :placeholder="t(badgeLabelKeys.uv[badgePeriod])" class="tools-input" />
@@ -328,28 +365,15 @@ function switchLocale(locale: Locale) {
             <!-- Views badge label -->
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">{{ t("settings.badgeLabelPv") }}</span>
+                <span class="code-preview-label">{{ t("settings.badgeLabelPv") }}</span>
               </div>
               <div class="setting-control">
                 <input v-model="badgeLabelPv" type="text" maxlength="50" :placeholder="t(badgeLabelKeys.pv[badgePeriod])" class="tools-input" />
               </div>
             </div>
 
-            <!-- Live preview -->
-            <div v-if="badgeUrls.length" class="code-preview-row">
-              <div class="code-preview-header">
-                <span class="code-preview-label">{{ t("settings.badgePreview") }}</span>
-              </div>
-              <div class="badge-preview-area">
-                <template v-if="!previewFailed">
-                  <img v-for="url in badgeUrls" :key="url" :src="url" alt="Iris Analytics Badge" class="badge-preview-img" @error="previewFailed = true" />
-                </template>
-                <span v-else class="badge-preview-error">{{ t("settings.badgePreviewError") }}</span>
-              </div>
-            </div>
-
             <!-- Embed code -->
-            <div v-if="badgeEmbed" class="code-preview-row">
+            <div v-if="badgeEmbed">
               <div class="code-preview-header">
                 <span class="code-preview-label">{{ t("settings.badgeCode") }}</span>
                 <button class="copy-btn" :class="{ copied: badgeCopied }" @click="copyBadge(badgeEmbed)" :title="badgeCopied ? t('settings.copied') : t('settings.badgeCopyCode')">
@@ -359,6 +383,24 @@ function switchLocale(locale: Locale) {
               </div>
               <pre class="code-block badge-code-block"><code>{{ badgeEmbed }}</code></pre>
               <p class="badge-embed-hint">{{ t("settings.badgeEmbedHint") }}</p>
+            </div>
+
+            <!-- Stats API -->
+            <div class="setting-row code-preview-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.statsTitle") }}</span>
+                <span class="setting-desc">{{ t("settings.statsDesc") }}</span>
+              </div>
+
+              <button class="copy-btn" :class="{ copied: statsUrlCopied }" @click="statsUrl && copyStatsUrl(statsUrl)" :title="statsUrlCopied ? t('settings.copied') : t('settings.statsCopyUrl')">
+                <Copy v-if="!statsUrlCopied" class="w-4 h-4" />
+                <Check v-else class="w-4 h-4" />
+              </button>
+            </div>
+            <div v-if="statsUrl">
+              <div class="code-preview-header"></div>
+              <pre class="code-block"><code>{{ statsUrl }}</code></pre>
+              <p class="badge-embed-hint">{{ t("settings.statsEmbedHint") }}</p>
             </div>
           </div>
         </section>
@@ -560,10 +602,6 @@ function switchLocale(locale: Locale) {
   padding: 16px 20px;
 }
 
-.setting-row + .setting-row {
-  border-top: 1px solid #f0f0f0;
-}
-
 :root.dark .setting-row + .setting-row {
   border-top-color: #27272a;
 }
@@ -577,7 +615,7 @@ function switchLocale(locale: Locale) {
 .setting-label {
   font-size: 14px;
   font-weight: 500;
-  color: #18181b;
+  color: #000000;
 }
 
 :root.dark .setting-label {
@@ -801,7 +839,12 @@ function switchLocale(locale: Locale) {
   word-break: keep-all;
 }
 
-/* ── Badge embed ── */
+.badge-section-desc {
+  margin: 2px 20px 0;
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
 .badge-preview-area {
   padding: 16px 20px;
   display: flex;
