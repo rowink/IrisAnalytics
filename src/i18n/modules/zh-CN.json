@@ -89,10 +89,10 @@
   "settings.badgePreviewError": "预览加载失败",
   "settings.badgeEmbedHint": "将以上代码粘贴到网站 HTML 中需要显示徽标的位置",
   "settings.statsTitle": "统计接口",
-  "settings.statsDesc": "免登录获取聚合统计数据（PV / UV / Visit），用于自定义展示",
+  "settings.statsDesc": "免登录获取聚合统计数据（浏览量 / 访客数 / 访问次数），用于自定义展示",
   "settings.statsUrl": "接口地址",
   "settings.statsCopyUrl": "复制接口地址",
-  "settings.statsEmbedHint": "接口仅返回聚合数字，不含路径、来源等明细；签名绑定部署域名，签名无效时返回 401",
+  "settings.statsEmbedHint": "接口仅返回聚合数字，不含路径、来源等明细；签名无效时返回 401",
 
   "badge.labelUvToday": "今日访客数",
   "badge.labelUvYesterday": "昨日访客数",

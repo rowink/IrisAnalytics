@@ -87,7 +87,7 @@
   "settings.statsDesc": "Fetch aggregated stats (PV / UV / Visit) without logging in, for custom display",
   "settings.statsUrl": "API URL",
   "settings.statsCopyUrl": "Copy API URL",
-  "settings.statsEmbedHint": "The endpoint returns aggregated numbers only (no path/referrer details). The sign is bound to the deployment host; an invalid sign returns 401",
+  "settings.statsEmbedHint": "The endpoint returns aggregated numbers only (no path/referrer details); an invalid sign returns 401",
 
   "badge.labelUvToday": "Today's Visitors",
   "badge.labelUvYesterday": "Yesterday's Visitors",
