@@ -5,7 +5,7 @@ export async function onRequest({ request, env }) {
     const { host, path, referrer, website, visitor, visit } = await request.json();
     // 校验统计白名单
     if (env.CLOUDFLARE_WEBSITE_WHITELIST) {
-      const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split("\n");
+      const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split(/[\n,]+/).map((line) => line.trim()).filter(Boolean);
       const isAllowed = lines.some((line) => {
         const trimmed = line.trim();
         if (!trimmed) return false;

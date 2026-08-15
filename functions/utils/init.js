@@ -33,7 +33,7 @@ export const vh_INIT = async (env, time, siteID, tz, type = null) => {
         });
         // 校验白名单
         if (env.CLOUDFLARE_WEBSITE_WHITELIST) {
-          const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split("\n");
+          const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split(/[\n,]+/).map((line) => line.trim()).filter(Boolean);
           const websiteIDArr = lines
             .map((line) => line.trim())
             .filter(Boolean)

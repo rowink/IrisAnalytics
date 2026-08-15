@@ -48,7 +48,7 @@ No database required — fully powered by the Cloudflare ecosystem:
 | `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                             | Yes      |
 | `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token (Account Analytics Read permission)          | Yes      |
 | `CLOUDFLARE_WEBSITE_PWD`       | Dashboard access password (leave empty for no password)           | No       |
-| `CLOUDFLARE_WEBSITE_WHITELIST` | Analytics whitelist — format: `WebsiteID \| domain`, one per line | No       |
+| `CLOUDFLARE_WEBSITE_WHITELIST` | Analytics whitelist — format: `WebsiteID \| domain`, newline- or comma-separated | No       |
 
 ### Analytics Engine Binding
 
@@ -72,10 +72,24 @@ Insert the following code at the bottom of your website to integrate analytics:
 By default, the analytics API is public — any site can send data to the dataset. The whitelist provides two-way verification of both the site ID and domain to prevent data pollution.
 
 ```shell
-# Format: WebsiteID | domain, one rule per line
+# Recommended: comma-separated (single line) — avoids the Cloudflare env var UI stripping newlines
+CLOUDFLARE_WEBSITE_WHITELIST = website-id | domain.com, iris | iris.exi.software
+```
+
+Newline-separated rules are also supported (one rule per line, or a mixed format with each line ending in a comma). However, since Cloudflare's page may change and newlines could be lost, making the config hard to edit later, this configuration style is not recommended. If you do use it, it's recommended to end each rule with a comma.
+
+```shell
+# Format: WebsiteID | domain, newline-separated
 CLOUDFLARE_WEBSITE_WHITELIST =
 website-id | domain.com
 iris | iris.exi.software
+...
+
+# Format: WebsiteID | domain, mixed newline-separated with trailing commas
+CLOUDFLARE_WEBSITE_WHITELIST =
+website-id | domain.com,
+iris | iris.exi.software,
+...
 ```
 
 The whitelist validates both the unique site ID and domain, ensuring only authorized websites can report data.

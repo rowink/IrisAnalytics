@@ -42,12 +42,12 @@ Iris Analytics 是基于 [HanAnalytics](https://github.com/uxiaohan/HanAnalytics
 
 ### 环境变量
 
-| 变量名                         | 说明                                                                                 | 必填 |
-| ------------------------------ | ------------------------------------------------------------------------------------ | ---- |
-| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                                                | 是   |
-| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token（账户分析读取权限）                                             | 是   |
-| `CLOUDFLARE_WEBSITE_PWD`       | 仪表板访问密码，留空则无需密码                                                       | 否   |
-| `CLOUDFLARE_WEBSITE_WHITELIST` | 统计白名单，格式 `WebsiteID \| 域名`，每行一条规则。例如：`website-id \| domain.com` | 否   |
+| 变量名                         | 说明                                                                                       | 必填 |
+| ------------------------------ | ------------------------------------------------------------------------------------------ | ---- |
+| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                                                      | 是   |
+| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token（账户分析读取权限）                                                   | 是   |
+| `CLOUDFLARE_WEBSITE_PWD`       | 仪表板访问密码，留空则无需密码                                                             | 否   |
+| `CLOUDFLARE_WEBSITE_WHITELIST` | 统计白名单，格式 `WebsiteID \| 域名`，支持换行或逗号分隔。例如：`website-id \| domain.com` | 否   |
 
 ### Analytics Engine 绑定
 
@@ -71,10 +71,24 @@ AnalyticsDataset
 默认分析 API 公开，任何网站都可以向数据集中写入数据。通过白名单可以双向校验网站唯一 ID 和域名，防止数据被污染。
 
 ```shell
-# 格式：WebsiteID | 域名，每行一条规则
+# 推荐写法：逗号分隔（单行），避免 Cloudflare 环境变量 UI 吞掉换行
+CLOUDFLARE_WEBSITE_WHITELIST = website-id | domain.com, iris | iris.exi.software
+```
+
+也可以使用换行分隔（每行一条规则，或每行以逗号结尾的混合写法，均可正常解析），因为 Cloudflare 的页面可能变动，有可能会丢失换行不好二次修改，所以并不推荐这种配置方式。如果使用，建议在规则末尾加上逗号。
+
+```shell
+# 格式：WebsiteID | 域名，换行分隔
 CLOUDFLARE_WEBSITE_WHITELIST =
 website-id | domain.com
 iris | iris.exi.software
+...
+
+# 格式：WebsiteID | 域名，混合换行分隔
+CLOUDFLARE_WEBSITE_WHITELIST =
+website-id | domain.com,
+iris | iris.exi.software,
+...
 ```
 
 白名单同时校验网站唯一 ID 和域名，确保只有指定的网站可以上报数据。
