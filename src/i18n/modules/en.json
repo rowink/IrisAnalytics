@@ -355,5 +355,7 @@
   "area.ZW": "Zimbabwe",
   "area.HK": "Hong Kong",
   "area.MO": "Macao",
+  "area.T1": "Unknown (Tor)",
+  "area.XX": "Unknown",
   "area.-99": "Siachen Glacier"
 }
