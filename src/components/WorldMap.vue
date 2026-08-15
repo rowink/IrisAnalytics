@@ -51,7 +51,12 @@ const props = defineProps<{
 }>();
 
 const theme = useThemeStore();
-const { t } = useI18n();
+const { t, te } = useI18n();
+
+const formatName = (code: string | undefined, fallbackName: string | undefined) => {
+  if (code && te(`area.${code}`)) return t(`area.${code}`);
+  return fallbackName || "";
+};
 
 function chartColors(isDark: boolean) {
   return {
@@ -83,7 +88,7 @@ const chartOption = computed(() => {
       textStyle: { color: c.tooltipText },
       formatter: (params: { name?: string; data?: { code?: string }; value?: number | string }) => {
         const code = params.data?.code || (params.name ? geoNameToCode[params.name] : undefined);
-        const name = code ? t(`area.${code}`) || params.name || "" : params.name || "";
+        const name = formatName(code, params.name);
         const val = Number(params.value) || 0;
         return `${name}${val ? `: ${val}` : ""}`;
       }
@@ -119,7 +124,7 @@ const chartOption = computed(() => {
             fontWeight: "bold",
             formatter: (params: { name?: string }) => {
               const code = params.name ? geoNameToCode[params.name] : undefined;
-              return code ? t(`area.${code}`) || params.name || "" : params.name || "";
+              return formatName(code, params.name);
             }
           },
           itemStyle: {
