@@ -324,7 +324,9 @@ const getIconUrl = (url: string) => {
   return `https://icons.duckduckgo.com/ip3/${_url.hostname}.ico`;
 };
 
-const getIcon = (code: string) => `${location.origin}/icon/badge/${code}.png`;
+// T1 = Tor exit node, XX = unknown country (see en.json area.T1 / area.XX)
+const UNKNOWN_CODES = new Set(["T1", "XX"]);
+const getIcon = (code: string) => `${location.origin}/icon/badge/${UNKNOWN_CODES.has(code) ? "XX" : code}.png`;
 
 function chartColors(isDark: boolean) {
   return {
