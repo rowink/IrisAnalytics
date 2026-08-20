@@ -1,6 +1,8 @@
 import { isHuman } from "bot-signal";
 
-const { hostname: host, pathname } = location;
+const { hostname: host, pathname: rawPathname } = location;
+// 规范化尾随斜杠：/about/ -> /about，保留根路径 /
+const pathname = rawPathname.length > 1 && rawPathname.endsWith("/") ? rawPathname.slice(0, -1) : rawPathname;
 const { currentScript, referrer } = document;
 const currentRef = !referrer.includes(host) ? referrer : "";
 
