@@ -55,7 +55,7 @@ const { t, te } = useI18n();
 
 const formatName = (code: string | undefined, fallbackName: string | undefined) => {
   if (code && te(`area.${code}`)) return t(`area.${code}`);
-  return fallbackName || "";
+  return fallbackName || t("area.XX");
 };
 
 function chartColors(isDark: boolean) {

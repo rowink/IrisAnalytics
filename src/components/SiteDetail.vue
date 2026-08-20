@@ -205,8 +205,8 @@
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.area != undefined">
             <p class="page-item" v-for="(i, idx) in resData.area" :key="idx">
-              <img :src="getIcon(i.name)" />
-              <span class="line-clamp-1">{{ t(`area.${i.code}`) }}</span>
+              <img :src="getAreaIcon(i.code)" />
+              <span class="line-clamp-1">{{ areaName(i.code) }}</span>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
             </p>
@@ -243,7 +243,7 @@ import vh from "vh-plugin";
 
 const { toast } = useToast();
 const theme = useThemeStore();
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const props = defineProps<{
   siteId: string;
@@ -327,6 +327,12 @@ const getIconUrl = (url: string) => {
 // T1 = Tor exit node, XX = unknown country (see en.json area.T1 / area.XX)
 const UNKNOWN_CODES = new Set(["T1", "XX"]);
 const getIcon = (code: string) => `${location.origin}/icon/badge/${UNKNOWN_CODES.has(code) ? "XX" : code}.png`;
+
+// Fallback to "Unknown" (area.XX) when the code has no official country translation (e.g. XK)
+const areaName = (code: string) => (te(`area.${code}`) ? t(`area.${code}`) : t("area.XX"));
+
+// Fallback to the XX badge when the code has no official country flag (e.g. XK)
+const getAreaIcon = (code: string) => `${location.origin}/icon/badge/${UNKNOWN_CODES.has(code) || !te(`area.${code}`) ? "XX" : code}.png`;
 
 function chartColors(isDark: boolean) {
   return {
