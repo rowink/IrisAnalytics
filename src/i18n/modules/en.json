@@ -66,6 +66,8 @@
   "settings.system": "System",
   "settings.tools": "Integration Tools",
   "settings.toolsDesc": "Generate the tracking script and paste it into your website",
+  "settings.interface": "API",
+  "settings.interfaceDesc": "Configure public API endpoints for external integration",
   "settings.websiteId": "Website ID",
   "settings.websiteIdPlaceholder": "Enter a custom website identifier",
   "settings.trackingCode": "Tracking Code",
@@ -88,6 +90,12 @@
   "settings.statsUrl": "API URL",
   "settings.statsCopyUrl": "Copy API URL",
   "settings.statsEmbedHint": "The endpoint returns aggregated numbers only (no path/referrer details); an invalid sign returns 401",
+
+  "settings.topTitle": "Top Pages API",
+  "settings.topDesc": "Fetch the most visited pages for a tracked site without logging in",
+  "settings.topUrlLabel": "API URL",
+  "settings.copyUrl": "Copy URL",
+  "settings.topEmbedHint": "Returns the top N pages by view count (SUM(_sample_interval)); an invalid sign returns 401",
 
   "badge.labelUvToday": "Today's Visitors",
   "badge.labelUvYesterday": "Yesterday's Visitors",

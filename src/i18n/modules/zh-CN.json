@@ -71,6 +71,8 @@
   "settings.system": "跟随系统",
   "settings.tools": "集成工具",
   "settings.toolsDesc": "生成分析追踪代码，复制并粘贴到你的网站中",
+  "settings.interface": "API 接口",
+  "settings.interfaceDesc": "配置公开 API 接口，用于外部集成",
   "settings.websiteId": "网站标识",
   "settings.websiteIdPlaceholder": "输入自定义网站唯一标识",
   "settings.trackingCode": "追踪代码",
@@ -93,6 +95,12 @@
   "settings.statsUrl": "接口地址",
   "settings.statsCopyUrl": "复制接口地址",
   "settings.statsEmbedHint": "接口仅返回聚合数字，不含路径、来源等明细；签名无效时返回 401",
+
+  "settings.topTitle": "热门页面接口",
+  "settings.topDesc": "免登录获取被追踪站点访问最多的页面列表",
+  "settings.topUrlLabel": "接口地址",
+  "settings.copyUrl": "复制地址",
+  "settings.topEmbedHint": "返回访问量 TOP N 的页面列表；签名无效时返回 401",
 
   "badge.labelUvToday": "今日访客数",
   "badge.labelUvYesterday": "昨日访客数",

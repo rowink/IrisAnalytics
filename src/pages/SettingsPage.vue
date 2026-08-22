@@ -123,14 +123,48 @@ const badgeEmbed = computed((): string | null => {
 ${urls.map((url) => `<img src="${url}" alt="Iris Analytics Badge" />`).join("\n")}`;
 });
 
-// Stats API：复用 /sign 获取的签名，time 与徽标周期联动
-const { copy: copyStatsUrl, copied: statsUrlCopied } = useClipboard();
+// ── Interface tab (独立的 siteID + 签名，用于 Stats API / Top Pages API) ──
+const apiWebsiteId = ref("");
+const apiSign = ref("");
+const apiPeriod = ref("today");
+const topLimit = ref("10");
+let apiReqSeq = 0;
 
-const statsUrl = computed((): string | null => {
-  const siteID = websiteId.value.trim();
-  if (!siteID || !badgeSign.value) return null;
-  const params = new URLSearchParams({ siteID, time: badgePeriod.value, sign: badgeSign.value });
+const fetchApiSign = async () => {
+  const siteID = apiWebsiteId.value.trim();
+  const seq = ++apiReqSeq;
+  if (!siteID) {
+    apiSign.value = "";
+    return;
+  }
+  try {
+    const res = await fetch(`/sign?siteID=${encodeURIComponent(siteID)}`);
+    const data = await res.json();
+    if (seq !== apiReqSeq) return;
+    apiSign.value = res.ok && data.success ? data.sign : "";
+  } catch {
+    if (seq !== apiReqSeq) return;
+    apiSign.value = "";
+  }
+};
+
+const debouncedFetchApiSign = useDebounceFn(fetchApiSign, 500);
+watch([apiWebsiteId, apiPeriod], () => debouncedFetchApiSign(), { immediate: true });
+
+const { copy: copyApiUrl, copied: apiUrlCopied } = useClipboard();
+
+const apiStatsUrl = computed((): string | null => {
+  const siteID = apiWebsiteId.value.trim();
+  if (!siteID || !apiSign.value) return null;
+  const params = new URLSearchParams({ siteID, time: apiPeriod.value, sign: apiSign.value });
   return `${location.origin}/stats?${params.toString()}`;
+});
+
+const apiTopUrl = computed((): string | null => {
+  const siteID = apiWebsiteId.value.trim();
+  if (!siteID || !apiSign.value) return null;
+  const params = new URLSearchParams({ siteID, time: apiPeriod.value, limit: topLimit.value, sign: apiSign.value });
+  return `${location.origin}/top?${params.toString()}`;
 });
 
 // 输入防抖：websiteId/label 逐字符输入时避免频繁请求 /sign
@@ -154,6 +188,7 @@ const goBack = () => router.back();
 const tabs = computed(() => [
   { key: "general", label: t("settings.general"), icon: Settings },
   { key: "tools", label: t("settings.tools"), icon: Code },
+  { key: "interface", label: t("settings.interface"), icon: Code },
   { key: "appearance", label: t("settings.theme"), icon: Palette },
   { key: "about", label: t("settings.about"), icon: Info }
 ]);
@@ -256,6 +291,95 @@ function switchLocale(locale: Locale) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Interface: Stats & Top Pages API -->
+        <section v-if="activeTab === 'interface'" class="settings-section">
+          <h3 class="section-title">{{ t("settings.interface") }}</h3>
+          <p class="section-desc">{{ t("settings.interfaceDesc") }}</p>
+          <div class="setting-card">
+            <!-- Website ID -->
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.websiteId") }}</span>
+                <span class="setting-desc">{{ t("settings.websiteIdPlaceholder") }}</span>
+              </div>
+              <div class="setting-control">
+                <input v-model="apiWebsiteId" type="text" :placeholder="t('settings.websiteIdPlaceholder')" class="tools-input" />
+              </div>
+            </div>
+
+            <!-- Period -->
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="code-preview-label">{{ t("settings.badgePeriod") }}</span>
+              </div>
+              <div class="setting-control">
+                <Select :model-value="apiPeriod" @update:model-value="apiPeriod = $event">
+                  <SelectTrigger class="w-[130px] sm:w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem v-for="p in badgePeriods" :key="p.value" :value="p.value">{{ p.label }}</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <!-- Stats API -->
+            <div class="setting-row code-preview-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.statsTitle") }}</span>
+                <span class="setting-desc">{{ t("settings.statsDesc") }}</span>
+              </div>
+              <button v-if="apiStatsUrl" class="copy-btn" :class="{ copied: apiUrlCopied }" @click="copyApiUrl(apiStatsUrl)" :title="apiUrlCopied ? t('settings.copied') : t('settings.statsCopyUrl')">
+                <Copy v-if="!apiUrlCopied" class="w-4 h-4" />
+                <Check v-else class="w-4 h-4" />
+              </button>
+            </div>
+            <div v-if="apiStatsUrl">
+              <div class="code-preview-header"></div>
+              <pre class="code-block"><code>{{ apiStatsUrl }}</code></pre>
+              <p class="badge-embed-hint">{{ t("settings.statsEmbedHint") }}</p>
+            </div>
+
+            <!-- Top Pages API -->
+            <div class="setting-row code-preview-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t("settings.topTitle") }}</span>
+                <span class="setting-desc">{{ t("settings.topDesc") }}</span>
+              </div>
+              <div class="setting-control">
+                <Select :model-value="topLimit" @update:model-value="topLimit = $event">
+                  <SelectTrigger class="w-[130px] sm:w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="5">TOP 5</SelectItem>
+                      <SelectItem value="10">TOP 10</SelectItem>
+                      <SelectItem value="20">TOP 20</SelectItem>
+                      <SelectItem value="50">TOP 50</SelectItem>
+                      <SelectItem value="100">TOP 100</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div v-if="apiTopUrl">
+              <div class="code-preview-header">
+                <span class="code-preview-label">{{ t("settings.topUrlLabel") }}</span>
+                <button class="copy-btn" :class="{ copied: apiUrlCopied }" @click="copyApiUrl(apiTopUrl)" :title="apiUrlCopied ? t('settings.copied') : t('settings.copyUrl')">
+                  <Copy v-if="!apiUrlCopied" class="w-4 h-4" />
+                  <Check v-else class="w-4 h-4" />
+                </button>
+              </div>
+              <pre class="code-block"><code>{{ apiTopUrl }}</code></pre>
+              <p class="badge-embed-hint">{{ t("settings.topEmbedHint") }}</p>
             </div>
           </div>
         </section>
@@ -383,24 +507,6 @@ function switchLocale(locale: Locale) {
               </div>
               <pre class="code-block badge-code-block"><code>{{ badgeEmbed }}</code></pre>
               <p class="badge-embed-hint">{{ t("settings.badgeEmbedHint") }}</p>
-            </div>
-
-            <!-- Stats API -->
-            <div class="setting-row code-preview-row">
-              <div class="setting-info">
-                <span class="setting-label">{{ t("settings.statsTitle") }}</span>
-                <span class="setting-desc">{{ t("settings.statsDesc") }}</span>
-              </div>
-
-              <button class="copy-btn" :class="{ copied: statsUrlCopied }" @click="statsUrl && copyStatsUrl(statsUrl)" :title="statsUrlCopied ? t('settings.copied') : t('settings.statsCopyUrl')">
-                <Copy v-if="!statsUrlCopied" class="w-4 h-4" />
-                <Check v-else class="w-4 h-4" />
-              </button>
-            </div>
-            <div v-if="statsUrl">
-              <div class="code-preview-header"></div>
-              <pre class="code-block"><code>{{ statsUrl }}</code></pre>
-              <p class="badge-embed-hint">{{ t("settings.statsEmbedHint") }}</p>
             </div>
           </div>
         </section>
