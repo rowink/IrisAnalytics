@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, inject, watch } from "vue";
 import type { Ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { Settings, Palette, Info, Code, ChevronLeft, X, Copy, Check, ExternalLink } from "@lucide/vue";
 import { useMediaQuery, useClipboard, useDebounceFn } from "@vueuse/core";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useSettingsStore } from "@/stores/settings";
 import { useThemeStore } from "@/stores/theme";
 import { useI18n } from "vue-i18n";
@@ -15,8 +16,10 @@ const settings = useSettingsStore();
 const theme = useThemeStore();
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 
-const activeTab = ref("general");
+// 当前 tab 由路由参数驱动，支持 /settings/general 等直链，刷新不丢失
+const activeTab = computed(() => route.params.tab ?? "general");
 const isMobile = useMediaQuery("(max-width: 768px)");
 const mobileMenuOpen = inject<Ref<boolean>>("mobileMenuOpen")!;
 
@@ -128,6 +131,13 @@ const apiWebsiteId = ref("");
 const apiSign = ref("");
 const apiPeriod = ref("today");
 const topLimit = ref("10");
+// 自定义 TOP N：仅接受 1-100 的整数，与服务端 /top 的钳制范围一致；非法输入时隐藏接口地址
+const customTopLimit = ref("30");
+const effectiveTopLimit = computed((): string | null => {
+  if (topLimit.value !== "custom") return topLimit.value;
+  const n = Number(customTopLimit.value);
+  return Number.isInteger(n) && n >= 1 && n <= 100 ? String(n) : null;
+});
 let apiReqSeq = 0;
 
 const fetchApiSign = async () => {
@@ -151,7 +161,9 @@ const fetchApiSign = async () => {
 const debouncedFetchApiSign = useDebounceFn(fetchApiSign, 500);
 watch([apiWebsiteId, apiPeriod], () => debouncedFetchApiSign(), { immediate: true });
 
-const { copy: copyApiUrl, copied: apiUrlCopied } = useClipboard();
+// Stats / Top 两个 URL 的复制状态各自独立，避免点一个全部打勾
+const { copy: copyStatsUrl, copied: statsUrlCopied } = useClipboard();
+const { copy: copyTopUrl, copied: topUrlCopied } = useClipboard();
 
 const apiStatsUrl = computed((): string | null => {
   const siteID = apiWebsiteId.value.trim();
@@ -162,8 +174,9 @@ const apiStatsUrl = computed((): string | null => {
 
 const apiTopUrl = computed((): string | null => {
   const siteID = apiWebsiteId.value.trim();
-  if (!siteID || !apiSign.value) return null;
-  const params = new URLSearchParams({ siteID, time: apiPeriod.value, limit: topLimit.value, sign: apiSign.value });
+  const limit = effectiveTopLimit.value;
+  if (!siteID || !apiSign.value || !limit) return null;
+  const params = new URLSearchParams({ siteID, time: apiPeriod.value, limit, sign: apiSign.value });
   return `${location.origin}/top?${params.toString()}`;
 });
 
@@ -179,7 +192,9 @@ watch(
 );
 
 const selectTab = (key: string) => {
-  activeTab.value = key;
+  if (route.params.tab !== key) {
+    router.push({ name: "settings", params: { tab: key } });
+  }
   if (isMobile.value) mobileMenuOpen.value = false;
 };
 
@@ -336,8 +351,8 @@ function switchLocale(locale: Locale) {
                 <span class="setting-label">{{ t("settings.statsTitle") }}</span>
                 <span class="setting-desc">{{ t("settings.statsDesc") }}</span>
               </div>
-              <button v-if="apiStatsUrl" class="copy-btn" :class="{ copied: apiUrlCopied }" @click="copyApiUrl(apiStatsUrl)" :title="apiUrlCopied ? t('settings.copied') : t('settings.statsCopyUrl')">
-                <Copy v-if="!apiUrlCopied" class="w-4 h-4" />
+              <button v-if="apiStatsUrl" class="copy-btn" :class="{ copied: statsUrlCopied }" @click="copyStatsUrl(apiStatsUrl)" :title="statsUrlCopied ? t('settings.copied') : t('settings.statsCopyUrl')">
+                <Copy v-if="!statsUrlCopied" class="w-4 h-4" />
                 <Check v-else class="w-4 h-4" />
               </button>
             </div>
@@ -353,7 +368,7 @@ function switchLocale(locale: Locale) {
                 <span class="setting-label">{{ t("settings.topTitle") }}</span>
                 <span class="setting-desc">{{ t("settings.topDesc") }}</span>
               </div>
-              <div class="setting-control">
+              <div class="setting-control flex items-center gap-2">
                 <Select :model-value="topLimit" @update:model-value="topLimit = $event">
                   <SelectTrigger class="w-[130px] sm:w-[180px]">
                     <SelectValue />
@@ -365,16 +380,18 @@ function switchLocale(locale: Locale) {
                       <SelectItem value="20">TOP 20</SelectItem>
                       <SelectItem value="50">TOP 50</SelectItem>
                       <SelectItem value="100">TOP 100</SelectItem>
+                      <SelectItem value="custom">{{ t("settings.topCustom") }}</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+                <Input v-if="topLimit === 'custom'" v-model="customTopLimit" type="number" min="1" max="100" class="w-[90px]" placeholder="1-100" />
               </div>
             </div>
             <div v-if="apiTopUrl">
               <div class="code-preview-header">
                 <span class="code-preview-label">{{ t("settings.topUrlLabel") }}</span>
-                <button class="copy-btn" :class="{ copied: apiUrlCopied }" @click="copyApiUrl(apiTopUrl)" :title="apiUrlCopied ? t('settings.copied') : t('settings.copyUrl')">
-                  <Copy v-if="!apiUrlCopied" class="w-4 h-4" />
+                <button class="copy-btn" :class="{ copied: topUrlCopied }" @click="copyTopUrl(apiTopUrl)" :title="topUrlCopied ? t('settings.copied') : t('settings.copyUrl')">
+                  <Copy v-if="!topUrlCopied" class="w-4 h-4" />
                   <Check v-else class="w-4 h-4" />
                 </button>
               </div>

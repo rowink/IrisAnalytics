@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/pages/OverviewPage.vue")
   },
   {
-    path: "/settings",
+    path: "/settings/:tab(general|tools|interface|appearance|about)?",
     name: "settings",
     component: () => import("@/pages/SettingsPage.vue")
   },

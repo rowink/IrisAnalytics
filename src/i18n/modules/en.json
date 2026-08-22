@@ -96,6 +96,7 @@
 
   "settings.topTitle": "Top Pages API",
   "settings.topDesc": "Fetch the most visited pages for a tracked site without logging in",
+  "settings.topCustom": "Custom",
   "settings.topUrlLabel": "API URL",
   "settings.copyUrl": "Copy URL",
   "settings.topEmbedHint": "Returns the top N pages by view count (SUM(_sample_interval)); an invalid sign returns 401",

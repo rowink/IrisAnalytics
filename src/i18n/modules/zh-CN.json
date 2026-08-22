@@ -101,6 +101,7 @@
 
   "settings.topTitle": "热门页面接口",
   "settings.topDesc": "免登录获取被追踪站点访问最多的页面列表",
+  "settings.topCustom": "自定义",
   "settings.topUrlLabel": "接口地址",
   "settings.copyUrl": "复制地址",
   "settings.topEmbedHint": "返回访问量 TOP N 的页面列表；签名无效时返回 401",
