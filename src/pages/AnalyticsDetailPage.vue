@@ -57,7 +57,6 @@ import { ChevronLeft, Clock } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast/use-toast";
 import vh from "vh-plugin";
