@@ -198,7 +198,7 @@ const selectTab = (key: string) => {
   if (isMobile.value) mobileMenuOpen.value = false;
 };
 
-const goBack = () => router.back();
+const goBack = () => router.push({ name: "overview" });
 
 const tabs = computed(() => [
   { key: "general", label: t("settings.general"), icon: Settings },
