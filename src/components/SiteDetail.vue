@@ -66,8 +66,18 @@
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.path != undefined">
-            <p class="page-item" v-for="(i, idx) in resData.path" :key="idx">
-              <span class="line-clamp-1">{{ i.name }}</span>
+            <p class="page-item group" v-for="(i, idx) in resData.path" :key="idx">
+              <a
+                v-if="pageUrl(i.name)"
+                :href="pageUrl(i.name)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="line-clamp-1 flex items-center gap-1.5 min-w-0 cursor-pointer hover:text-[#4f6ef7] transition-colors"
+              >
+                <span class="line-clamp-1 min-w-0">{{ i.name }}</span>
+                <ExternalLink class="w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+              <span v-else class="line-clamp-1">{{ i.name }}</span>
               <span class="line-clamp-1">{{ i.value }}</span>
               <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
             </p>
@@ -323,6 +333,9 @@ const getIconUrl = (url: string) => {
   const _url = new URL(url);
   return `https://icons.duckduckgo.com/ip3/${_url.hostname}.ico`;
 };
+
+// 拼接页面完整链接：https://{host}{path}，host 缺失时返回空串（不渲染链接）
+const pageUrl = (path: string) => (props.host ? `https://${props.host}${path}` : "");
 
 // T1 = Tor exit node, XX = unknown country (see en.json area.T1 / area.XX)
 const UNKNOWN_CODES = new Set(["T1", "XX"]);
