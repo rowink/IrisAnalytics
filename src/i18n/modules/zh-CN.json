@@ -41,6 +41,9 @@
   "detail.countries": "国家",
   "detail.none": "(None)",
 
+  "analyticsDetail.ip": "IP 地址",
+  "analyticsDetail.userAgent": "User Agent",
+
   "chart.views": "浏览量",
   "chart.visitors": "访客数",
 

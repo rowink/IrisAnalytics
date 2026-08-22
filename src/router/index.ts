@@ -13,6 +13,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/pages/SettingsPage.vue")
   },
   {
+    path: "/:id/analytics/:type(ip|ua)",
+    name: "analytics-detail",
+    component: () => import("@/pages/AnalyticsDetailPage.vue")
+  },
+  {
     path: "/:id",
     name: "detail",
     component: () => import("@/pages/DetailPage.vue")

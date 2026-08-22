@@ -41,6 +41,9 @@
   "detail.countries": "Countries",
   "detail.none": "(None)",
 
+  "analyticsDetail.ip": "IP Addresses",
+  "analyticsDetail.userAgent": "User Agents",
+
   "chart.views": "Page Views",
   "chart.visitors": "Visitors",
 

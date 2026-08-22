@@ -21,6 +21,8 @@ export async function onRequest({ request, env }) {
     }
     const parsedUserAgent = new UAParser(userAgent);
     const { browser, os, device } = parsedUserAgent.getResult();
+    // IP
+    const ip = request.headers.get("cf-connecting-ip") || "";
     // Area
     const area = request.cf ? String(request.cf.country).trim() || "Unknown" : "Unknown";
     // Referrer
@@ -54,7 +56,8 @@ export async function onRequest({ request, env }) {
           userAgent, //UA - blob8
           deviceType, //deviceType - blob9
           device.vendor || "Unknown", //deviceVendor - blob10
-          device.model || "Unknown" //deviceModel - blob11
+          device.model || "Unknown", //deviceModel - blob11
+          ip //ip - blob12
         ],
         doubles: [visitor ? 1 : 0, visit ? 1 : 0]
       }); // Response

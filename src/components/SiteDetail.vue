@@ -91,7 +91,12 @@
 
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t("detail.referrers") }}</CardTitle>
+          <CardTitle class="flex items-center justify-between">
+            <span>{{ t("detail.referrers") }}</span>
+            <router-link v-if="siteId" :to="`/${siteId}/analytics/ip`" class="detail-card-link" @click.stop>
+              <ExternalLink class="w-4 h-4" />
+            </router-link>
+          </CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.referrer != undefined">
@@ -122,7 +127,12 @@
     <div class="grid md:grid-cols-3 grid-cols-1">
       <Card class="box-border flex flex-col w-full h-[460px] overflow-hidden">
         <CardHeader>
-          <CardTitle>{{ t("detail.browsers") }}</CardTitle>
+          <CardTitle class="flex items-center justify-between">
+            <span>{{ t("detail.browsers") }}</span>
+            <router-link v-if="siteId" :to="`/${siteId}/analytics/ua`" class="detail-card-link" @click.stop>
+              <ExternalLink class="w-4 h-4" />
+            </router-link>
+          </CardTitle>
         </CardHeader>
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.soft != undefined">
@@ -584,6 +594,17 @@ onBeforeUnmount(() => {
 }
 
 .detail-link:hover {
+  color: #4f6ef7;
+}
+
+.detail-card-link {
+  display: inline-flex;
+  align-items: center;
+  color: #a1a1aa;
+  transition: color 0.15s;
+}
+
+.detail-card-link:hover {
   color: #4f6ef7;
 }
 
