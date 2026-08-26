@@ -67,8 +67,8 @@
         <CardContent class="box-border pt-0 w-full h-full overflow-hidden">
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.path != undefined">
             <p class="page-item group" v-for="(i, idx) in resData.path" :key="idx">
-              <a v-if="pageUrl(i.name)" :href="pageUrl(i.name)" target="_blank" rel="noopener noreferrer" class="line-clamp-1 flex items-center gap-1.5 min-w-0 cursor-pointer hover:text-[#4f6ef7] transition-colors">
-                <span class="whitespace-nowrap overflow-x-auto min-w-0">{{ i.name }}</span>
+              <a v-if="pageUrl(i.name)" :href="pageUrl(i.name)" target="_blank" rel="noopener noreferrer" class="line-clamp-1 flex items-center gap-1.5 min-w-0 cursor-pointer whitespace-nowrap hover:text-[#4f6ef7] transition-colors">
+                <div class="whitespace-nowrap overflow-x-auto min-w-0">{{ i.name }}</div>
                 <ExternalLink class="w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
               <span v-else class="line-clamp-1">{{ i.name }}</span>
