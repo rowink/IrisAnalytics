@@ -30,7 +30,7 @@
       <div class="analytics-list">
         <ScrollArea class="box-border h-full w-full pages-list" v-if="listData != undefined">
           <p class="page-item" v-for="(i, idx) in listData" :key="idx">
-            <span :class="['line-clamp-1', dataType === 'ip' ? 'font-mono text-xs' : 'text-xs']">{{ i.name }}</span>
+            <span :class="['overflow-x-auto whitespace-nowrap', dataType === 'ip' ? 'font-mono text-xs' : 'text-xs']">{{ i.name }}</span>
             <span class="line-clamp-1">{{ i.value }}</span>
             <em>{{ i.per }}<i :style="{ width: i.per }"></i></em>
           </p>

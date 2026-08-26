@@ -102,7 +102,7 @@
           <ScrollArea class="box-border p-2 pt-0 h-full w-full pages-list" v-if="resData.referrer != undefined">
             <p class="page-item" v-for="(i, idx) in resData.referrer" :key="idx">
               <img v-if="i.name" :src="getIconUrl(i.name)" />
-              <a :href="i.name" target="_blank" rel="noopener noreferrer" class="line-clamp-1 cursor-pointer">
+              <a :href="i.name" target="_blank" rel="noopener noreferrer" class="overflow-x-auto cursor-pointer">
                 {{ i.name || t("detail.none") }}
               </a>
               <span class="line-clamp-1">{{ i.value }}</span>
