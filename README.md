@@ -20,10 +20,14 @@
 
 Iris Analytics is a website analytics tool rebuilt from [HanAnalytics](https://github.com/uxiaohan/HanAnalytics), offering a clearer and more intuitive data overview with an improved user experience.
 
+
 No database required — fully powered by the Cloudflare ecosystem:
 
 - **Pages** — Hosts the frontend and API (Pages Functions)
 - **Workers Analytics Engine** — Time-series database for storing analytics data
+
+![iris analytics dashboard](docs/dashboard.png)
+
 
 ## Prerequisites
 
@@ -43,11 +47,11 @@ No database required — fully powered by the Cloudflare ecosystem:
 
 ### Environment Variables
 
-| Variable                       | Description                                                       | Required |
-| ------------------------------ | ----------------------------------------------------------------- | -------- |
-| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                             | Yes      |
-| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token (Account Analytics Read permission)          | Yes      |
-| `CLOUDFLARE_WEBSITE_PWD`       | Dashboard access password (leave empty for no password)           | No       |
+| Variable                       | Description                                                                      | Required |
+| ------------------------------ | -------------------------------------------------------------------------------- | -------- |
+| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                                            | Yes      |
+| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token (Account Analytics Read permission)                         | Yes      |
+| `CLOUDFLARE_WEBSITE_PWD`       | Dashboard access password (leave empty for no password)                          | No       |
 | `CLOUDFLARE_WEBSITE_WHITELIST` | Analytics whitelist — format: `WebsiteID \| domain`, newline- or comma-separated | No       |
 
 ### Analytics Engine Binding
