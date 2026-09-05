@@ -38,7 +38,7 @@ No database required — fully powered by the Cloudflare ecosystem:
 
 ## Deployment
 
-1. Fork this repository or [use it as a template](https://github.com/new?template_name=HanAnalytics&template_owner=uxiaohan)
+1. Fork this repository or [use it as a template](https://github.com/new?template_name=IrisAnalytics&template_owner=rowink)
 2. Create a Cloudflare Pages project, select your forked repo, choose **Vue** framework, fill in the [environment variables](#environment-variables), and deploy
 3. In your Pages project **Settings > Bindings**, add an **Analytics Engine** binding with variable name `AnalyticsBinding` and dataset `AnalyticsDataset`, then redeploy
 4. Visit `https://your-project.pages.dev` to access the analytics dashboard
