@@ -1,5 +1,5 @@
 // IP 黑名单匹配器（纯 JS、零依赖、Cloudflare Workers 兼容）
-// 规则语法：精确 IPv4/IPv6、CIDR 网段（1.2.3.0/24、2001:db8::/32）、IPv4 通配符（1.2.3.*、*）
+// 规则语法：精确 IPv4/IPv6、CIDR 网段（1.2.3.0/24、2001:db8::/32）、通配符（1.2.3.*、*）
 
 let cachedRaw = null;
 let cachedRules = [];
@@ -81,6 +81,25 @@ function ipv6PrefixMatch(a, b, prefix) {
   return (a[fullBytes] & mask) === (b[fullBytes] & mask);
 }
 
+/** 若为 ::ffff:0:0/96 形式则取出内嵌 IPv4，否则返回 null */
+function extractV4Mapped(v6) {
+  for (let i = 0; i < 10; i++) if (v6[i] !== 0) return null;
+  if (v6[10] !== 0xff || v6[11] !== 0xff) return null;
+  return ((v6[12] << 24) | (v6[13] << 16) | (v6[14] << 8) | v6[15]) >>> 0;
+}
+
+/** 由 IPv4 构造 ::ffff:0:0/96 映射形式的 16 字节 */
+function toV4Mapped(v4) {
+  const bytes = new Uint8Array(16);
+  bytes[10] = 0xff;
+  bytes[11] = 0xff;
+  bytes[12] = (v4 >>> 24) & 0xff;
+  bytes[13] = (v4 >>> 16) & 0xff;
+  bytes[14] = (v4 >>> 8) & 0xff;
+  bytes[15] = v4 & 0xff;
+  return bytes;
+}
+
 /** 编译 CIDR 规则为匹配器，非法返回 null */
 function compileCidr(entry) {
   const [addr, prefixStr, ...rest] = entry.split("/");
@@ -101,9 +120,9 @@ function compileCidr(entry) {
   return null;
 }
 
-/** 编译 IPv4 通配符规则（每段为数字或 *，单独的 * 匹配任意 IPv4），非法返回 null */
+/** 编译 IPv4 通配符规则（每段为数字或 *，单独的 * 匹配任意 IP），非法返回 null */
 function compileWildcard(entry) {
-  if (entry === "*") return (_ip, ipV4) => ipV4 !== null;
+  if (entry === "*") return (_ip, ipV4, ipV6) => ipV4 !== null || ipV6 !== null;
   const parts = entry.split(".");
   if (parts.length !== 4) return null;
   const octets = parts.map((p) => (p === "*" ? -1 : /^\d{1,3}$/.test(p) && Number(p) <= 255 ? Number(p) : NaN));
@@ -127,7 +146,8 @@ function compileRule(entry) {
 
 /**
  * 判断客户端 IP 是否命中黑名单。
- * 规则以逗号/换行分隔：精确 IP、CIDR 网段、IPv4 通配符（1.2.3.*、*）；非法条目自动跳过；解析结果按配置字符串缓存。
+ * 规则以逗号/换行分隔：精确 IP、CIDR 网段、通配符（1.2.3.*、*）；非法条目跳过并输出警告；解析结果按配置字符串缓存。
+ * IPv4 与 IPv4-mapped IPv6（::ffff:0:0/96）互相归一化，两种写法的规则均可命中。
  * @param {string|null|undefined} ip 客户端 IP（如 cf-connecting-ip）
  * @param {string|null|undefined} raw CLOUDFLARE_IP_BLACKLIST 配置原文
  * @returns {boolean}
@@ -135,17 +155,26 @@ function compileRule(entry) {
 export function isIpBlacklisted(ip, raw) {
   if (!ip || !raw) return false;
   if (raw !== cachedRaw) {
-    cachedRules = raw
-      .split(/[\n,]+/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map(compileRule)
-      .filter(Boolean);
+    const rules = [];
+    for (const part of raw.split(/[\n,]+/)) {
+      const entry = part.trim();
+      if (!entry) continue;
+      const rule = compileRule(entry);
+      if (rule) rules.push(rule);
+      else console.warn(`CLOUDFLARE_IP_BLACKLIST: skipped invalid rule "${entry}"`);
+    }
+    cachedRules = rules;
     cachedRaw = raw;
   }
   if (!cachedRules.length) return false;
-  const v4 = parseIPv4(ip);
-  const v6 = v4 === null ? parseIPv6(ip) : null;
+  let v4 = parseIPv4(ip);
+  let v6 = v4 === null ? parseIPv6(ip) : null;
+  if (v4 === null && v6 !== null) {
+    const mapped = extractV4Mapped(v6);
+    if (mapped !== null) v4 = mapped;
+  } else if (v4 !== null && v6 === null) {
+    v6 = toV4Mapped(v4);
+  }
   if (v4 === null && v6 === null) return false;
   return cachedRules.some((match) => match(ip, v4, v6));
 }
