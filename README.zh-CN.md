@@ -21,6 +21,7 @@
 Iris Analytics 是基于 [HanAnalytics](https://github.com/uxiaohan/HanAnalytics) 重构的网站分析工具，提供更清晰直观的数据总览和更好的使用体验。
 
 无需自建数据库，完全依托 Cloudflare 生态：
+
 - **Pages** — 托管前端与 API（Pages Functions）
 - **Workers Analytics Engine** — 时序数据库存储分析数据
 
@@ -42,12 +43,12 @@ Iris Analytics 是基于 [HanAnalytics](https://github.com/uxiaohan/HanAnalytics
 
 ### 环境变量
 
-| 变量名                         | 说明                                                                                       | 必填 |
-| ------------------------------ | ------------------------------------------------------------------------------------------ | ---- |
-| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                                                      | 是   |
-| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token（账户分析读取权限）                                                   | 是   |
-| `CLOUDFLARE_WEBSITE_PWD`       | 仪表板访问密码，留空则无需密码                                                             | 否   |
-| `CLOUDFLARE_WEBSITE_WHITELIST` | 统计白名单，格式 `WebsiteID \| 域名`，支持换行或逗号分隔。例如：`website-id \| domain.com` | 否   |
+| 变量名                         | 说明                                                                                               | 必填 |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- | ---- |
+| `CLOUDFLARE_ACCOUNT_ID`        | Cloudflare Account ID                                                                              | 是   |
+| `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token（账户分析读取权限）                                                           | 是   |
+| `CLOUDFLARE_WEBSITE_PWD`       | 仪表板访问密码，留空则无需密码                                                                     | 否   |
+| `CLOUDFLARE_WEBSITE_WHITELIST` | 统计白名单，格式 `WebsiteID \| 域名`，支持换行或逗号分隔。例如：`website-id \| domain.com`         | 否   |
 | `CLOUDFLARE_IP_BLACKLIST`      | IP 黑名单，支持精确 IP、CIDR 网段、通配符（如 `1.2.3.4`、`1.2.3.0/24`、`1.2.3.*`），逗号或换行分隔 | 否   |
 
 ### Analytics Engine 绑定
