@@ -112,11 +112,11 @@ Supported rule syntax (comma- or newline-separated, one rule per entry):
 
 - Exact IPv4: `1.2.3.4`
 - IPv4 CIDR range: `1.2.3.0/24`
-- IPv4 wildcard (per octet): `1.2.3.*`, `10.*.*.*`, or `*` to match any IPv4
+- IPv4 wildcard (per octet): `1.2.3.*`, `10.*.*.*`, or `*` to match any IP
 - Exact IPv6: `2001:db8::1`
 - IPv6 CIDR: `2001:db8::/32`
 
-Invalid entries are skipped silently.
+IPv4 and IPv4-mapped IPv6 addresses (e.g. `::ffff:1.2.3.4`) are treated as equivalent. Invalid entries are skipped and logged as warnings.
 
 ## Authentication
 
