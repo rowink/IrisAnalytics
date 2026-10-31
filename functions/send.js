@@ -1,5 +1,6 @@
 import { isbot } from "isbot";
 import { UAParser } from "ua-parser-js";
+import { isIpBlacklisted } from "./utils/ipBlacklist.js";
 export async function onRequest({ request, env }) {
   try {
     const { host, path, referrer, website, visitor, visit } = await request.json();
@@ -23,6 +24,10 @@ export async function onRequest({ request, env }) {
     const { browser, os, device } = parsedUserAgent.getResult();
     // IP
     const ip = request.headers.get("cf-connecting-ip") || "";
+    // IP 黑名单 — 命中则丢弃，不写入分析引擎
+    if (isIpBlacklisted(ip, env.CLOUDFLARE_IP_BLACKLIST)) {
+      return Response.json({ success: true, message: "ok" }, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" } });
+    }
     // Area
     const area = request.cf ? String(request.cf.country).trim() || "Unknown" : "Unknown";
     // Referrer
