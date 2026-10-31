@@ -48,6 +48,7 @@ Iris Analytics 是基于 [HanAnalytics](https://github.com/uxiaohan/HanAnalytics
 | `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token（账户分析读取权限）                                                   | 是   |
 | `CLOUDFLARE_WEBSITE_PWD`       | 仪表板访问密码，留空则无需密码                                                             | 否   |
 | `CLOUDFLARE_WEBSITE_WHITELIST` | 统计白名单，格式 `WebsiteID \| 域名`，支持换行或逗号分隔。例如：`website-id \| domain.com` | 否   |
+| `CLOUDFLARE_IP_BLACKLIST`      | IP 黑名单，支持精确 IP、CIDR 网段、通配符（如 `1.2.3.4`、`1.2.3.0/24`、`1.2.3.*`），逗号或换行分隔 | 否   |
 
 ### Analytics Engine 绑定
 
@@ -92,6 +93,25 @@ iris | iris.exi.software,
 ```
 
 白名单同时校验网站唯一 ID 和域名，确保只有指定的网站可以上报数据。
+
+## IP 黑名单
+
+命中黑名单的访问会被统计接口静默丢弃，不会写入 Analytics Engine（与机器人过滤一致）。适用于排除自身 IP、机房网段或恶意扫描器。
+
+```shell
+# 推荐写法：逗号分隔（单行）
+CLOUDFLARE_IP_BLACKLIST = 1.2.3.4, 10.0.0.0/8, 192.168.1.*, 2001:db8::/32
+```
+
+支持的规则语法（逗号或换行分隔，每条规则为以下之一）：
+
+- 精确 IPv4：`1.2.3.4`
+- IPv4 CIDR 网段：`1.2.3.0/24`
+- IPv4 通配符（按段匹配）：`1.2.3.*`、`10.*.*.*`，单独的 `*` 匹配任意 IPv4
+- 精确 IPv6：`2001:db8::1`
+- IPv6 CIDR：`2001:db8::/32`
+
+非法条目会被自动跳过。
 
 ## 登录授权
 

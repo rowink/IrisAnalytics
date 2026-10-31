@@ -53,6 +53,7 @@ No database required — fully powered by the Cloudflare ecosystem:
 | `CLOUDFLARE_API_TOKEN`         | Cloudflare API Token (Account Analytics Read permission)                         | Yes      |
 | `CLOUDFLARE_WEBSITE_PWD`       | Dashboard access password (leave empty for no password)                          | No       |
 | `CLOUDFLARE_WEBSITE_WHITELIST` | Analytics whitelist — format: `WebsiteID \| domain`, newline- or comma-separated | No       |
+| `CLOUDFLARE_IP_BLACKLIST`      | IP blacklist — exact IP, CIDR range, or wildcard (`1.2.3.4`, `1.2.3.0/24`, `1.2.3.*`), comma- or newline-separated | No       |
 
 ### Analytics Engine Binding
 
@@ -97,6 +98,25 @@ iris | iris.exi.software,
 ```
 
 The whitelist validates both the unique site ID and domain, ensuring only authorized websites can report data.
+
+## IP Blacklist
+
+Visits from blacklisted IPs are silently ignored by the tracking endpoint — they are never written to the Analytics Engine, the same as bot filtering. Useful for excluding your own IP, datacenter ranges, or abusive scanners.
+
+```shell
+# Recommended: comma-separated (single line)
+CLOUDFLARE_IP_BLACKLIST = 1.2.3.4, 10.0.0.0/8, 192.168.1.*, 2001:db8::/32
+```
+
+Supported rule syntax (comma- or newline-separated, one rule per entry):
+
+- Exact IPv4: `1.2.3.4`
+- IPv4 CIDR range: `1.2.3.0/24`
+- IPv4 wildcard (per octet): `1.2.3.*`, `10.*.*.*`, or `*` to match any IPv4
+- Exact IPv6: `2001:db8::1`
+- IPv6 CIDR: `2001:db8::/32`
+
+Invalid entries are skipped silently.
 
 ## Authentication
 
