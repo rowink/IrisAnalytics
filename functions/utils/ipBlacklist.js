@@ -110,7 +110,7 @@ function compileCidr(entry) {
     if (prefix > 32) return null;
     const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0;
     const net = (v4 & mask) >>> 0;
-    return (_ip, ipV4) => ipV4 !== null && ((ipV4 & mask) >>> 0) === net;
+    return (_ip, ipV4) => ipV4 !== null && (ipV4 & mask) >>> 0 === net;
   }
   const v6 = parseIPv6(addr);
   if (v6 !== null) {

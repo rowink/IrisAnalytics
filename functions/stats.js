@@ -25,8 +25,7 @@ const TIME_ARR = ["today", "1d", "week", "month", "7d", "30d", "60d", "90d"];
 // 转义 SQL 字符串字面量中的单引号（SQLite 方言：'' 表示一个字面单引号），防止拼接注入
 const escapeSql = (str) => String(str).replace(/'/g, "''");
 
-const json = (body, status = 200, extraHeaders = {}) =>
-  Response.json(body, { status, headers: { ...CORS_HEADERS, "Content-Type": "application/json", ...extraHeaders } });
+const json = (body, status = 200, extraHeaders = {}) => Response.json(body, { status, headers: { ...CORS_HEADERS, "Content-Type": "application/json", ...extraHeaders } });
 
 export async function onRequest({ request, env }) {
   if (request.method === "OPTIONS") {

@@ -33,14 +33,14 @@ export const vh_INIT = async (env, time, siteID, tz, type = null) => {
         });
         // 校验白名单
         if (env.CLOUDFLARE_WEBSITE_WHITELIST) {
-          const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split(/[\n,]+/).map((line) => line.trim()).filter(Boolean);
+          const lines = env.CLOUDFLARE_WEBSITE_WHITELIST.split(/[\n,]+/)
+            .map((line) => line.trim())
+            .filter(Boolean);
           const websiteIDArr = lines
             .map((line) => line.trim())
             .filter(Boolean)
             .map((line) => line.split("|")[0].trim());
-          resJSON = merged
-            .filter((i) => websiteIDArr.includes(i.blob1))
-            .map((i) => ({ id: i.blob1, host: i.blob2 }))
+          resJSON = merged.filter((i) => websiteIDArr.includes(i.blob1)).map((i) => ({ id: i.blob1, host: i.blob2 }));
         } else {
           resJSON = merged.map((i) => ({ id: i.blob1, host: i.blob2 })).slice(0, 100);
         }

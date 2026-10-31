@@ -107,7 +107,8 @@ export const countData = (arr, key, keyType, status = true) => {
   const totalCount = Object.values(res).reduce((acc, cur) => acc + cur, 0);
   return Object.entries(res)
     .map(([name, value]) => ({ name: name.replace(_StringKey, ""), value, per: `${Math.ceil((value / totalCount) * 100)}%` }))
-    .sort((a, b) => (status && b.value - a.value)).map((i => ({ ...i, value: key == "t_str" ? i.value : i.value >= 1000 ? `${(i.value / 1000).toFixed(1)}K` : i.value })));
+    .sort((a, b) => status && b.value - a.value)
+    .map((i) => ({ ...i, value: key == "t_str" ? i.value : i.value >= 1000 ? `${(i.value / 1000).toFixed(1)}K` : i.value }));
 };
 
 // Echarts
@@ -118,7 +119,11 @@ export const echartsData = (data, key, tz) => {
   // key=30 过去30天
   // key=60 过去60天
   // key=90 过去90天
-  const formatHour = (i) => dayjs.utc(i.hour).tz(tz).format(key === "today" || key === "1d" ? "HH" : "MM.DD");
+  const formatHour = (i) =>
+    dayjs
+      .utc(i.hour)
+      .tz(tz)
+      .format(key === "today" || key === "1d" ? "HH" : "MM.DD");
   const viewsArr = data.map((i) => ({ t_str: formatHour(i), count: Number(i.count) || 0 }));
   const visitorsArr = data.map((i) => ({ t_str: formatHour(i), count: Number(i.visitors) || 0 }));
   const now = dayjs().tz(tz);
